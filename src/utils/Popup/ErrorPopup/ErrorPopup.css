@@ -1,0 +1,27 @@
+.alertcontainer {
+    transition-duration: 0.3s !important;
+   backdrop-filter: blur(15px);
+   animation: alertfade 0.3s linear;
+}
+
+@keyframes alertfade{
+    from {
+        backdrop-filter: blur(0px);
+    }
+    to {
+        backdrop-filter: blur(15px);
+    }
+}
+
+.alertcontent{
+    animation: alertfade2 0.3s cubic-bezier(0.47, 1.64, 0.41, 0.8);;
+}
+
+@keyframes alertfade2{
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}

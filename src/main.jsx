@@ -10,7 +10,17 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-  }
+    // children: [
+    //   {
+    //     path: "/login",
+    //     element: <LoginForm />,
+    //   },
+    //   {
+    //     path: "/loginModal",
+    //     element: <LoginModal />,
+    //   }
+    // ]
+  },
 ])
 
 createRoot(document.getElementById('root')).render(
