@@ -8,11 +8,21 @@ import {
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../index";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../store/features/authSlice";
  
 export function StickyNavbar() {
   const [openNav, setOpenNav] = React.useState(false);
  
   const navigate = useNavigate();
+
+  const { status } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  }
 
   React.useEffect(() => {
     window.addEventListener(
@@ -33,8 +43,15 @@ export function StickyNavbar() {
           </Typography>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-x-5">
-              <Modal type={"login"}/>
-              <Modal type={"signup"}/>
+              {!status ? (
+                <>
+                  <Modal type="login" />
+                  <Modal type="signup" />
+                </>
+                ) : (
+                  <Button className="hidden lg:inline-block" onClick={handleLogout}>Log out</Button>
+                )
+              }
             </div>
             <IconButton
               variant="text"
@@ -76,9 +93,11 @@ export function StickyNavbar() {
           </div>
         </div>
         <Collapse open={openNav}>
-          <div className="flex items-center gap-x-1">
-            <Modal type={"login"} buttonClass="inline-block" isFullWidthButton={true} />
-            <Modal type={"signup"} buttonClass="inline-block" isFullWidthButton={true}/>
+          <div className="flex items-center justify-end gap-x-1">
+            {!status ? (<>
+              <Modal type={"login"} buttonClass="inline-block" isFullWidthButton={true} />
+              <Modal type={"signup"} buttonClass="inline-block" isFullWidthButton={true}/>
+            </>) : (<Button onClick={handleLogout}>Log out</Button>)}
           </div>
         </Collapse>
       </Navbar>

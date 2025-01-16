@@ -14,7 +14,7 @@ const errorSlice = createSlice({
             state.message = action.payload;
         },
         clearError: (state) => {
-            state.error = null;
+            state.message = null;
             state.status = false;
         },
     }

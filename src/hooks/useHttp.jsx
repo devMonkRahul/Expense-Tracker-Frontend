@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ErrorPopup from "../utils/Popup/ErrorPopup/ErrorPopup";
 import config from "../conf/config"
-import { setError, logout } from "../store/features/authSlice";
+import { logout } from "../store/features/authSlice";
+import { setError } from "../store/features/errorSlice";
 import { useDispatch } from "react-redux";
 
 const domain = config.domain;
