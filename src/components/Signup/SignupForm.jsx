@@ -206,8 +206,8 @@ export default function SignupForm() {
                 }}
               />
             </div>
-            <Button size="lg" color="gray" fullWidth type="submit">
-              Sign up
+            <Button size="lg" color="gray" fullWidth type="submit" disabled={isLoading}>
+              {isLoading ? "Signing up..." : "Sign Up"}
             </Button>
             <Button
               variant="outlined"
