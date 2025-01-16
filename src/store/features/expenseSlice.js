@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     expenses: [],
     loading: true,
-    error: null,
 };
 
 const expenseSlice = createSlice({
@@ -13,13 +12,9 @@ const expenseSlice = createSlice({
         setExpenses: (state, action) => {
             state.expenses = action.payload;
             state.loading = false;
-            state.error = null;
         },
         setLoading: (state, action) => {
             state.loading = action.payload;
-        },
-        setError: (state, action) => {
-            state.error = action.payload;
         },
         addExpense: (state, action) => {
             state.expenses.push(action.payload);
@@ -37,6 +32,6 @@ const expenseSlice = createSlice({
     },
 });
 
-export const { setExpenses, setLoading, setError, addExpense, deleteExpense, updateExpense } = expenseSlice.actions;
+export const { setExpenses, setLoading, addExpense, deleteExpense, updateExpense } = expenseSlice.actions;
 
 export default expenseSlice.reducer;
