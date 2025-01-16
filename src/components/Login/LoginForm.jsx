@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { login } from "../../store/features/authSlice";
 import { setError, clearError } from "../../store/features/errorSlice";
 import { usePost } from "../../hooks/useHttp"
@@ -46,7 +46,7 @@ export default function LoginForm() {
         navigate("/dashboard");
       }
     } catch (error) {
-      dispatch(setError(error.message));
+      dispatch(setError(error.message || "An error occurred while logging in"));
     } finally {
       setIsLoading(false);
     }

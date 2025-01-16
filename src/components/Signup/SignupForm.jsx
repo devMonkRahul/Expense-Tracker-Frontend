@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // @components
 import {
@@ -9,8 +9,57 @@ import {
   CardHeader,
   Typography,
 } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setError, clearError } from "../../store/features/errorSlice";
+import { login } from "../../store/features/authSlice";
+import { usePost } from "../../hooks/useHttp";
 
 export default function SignupForm() {
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  const { postRequest } = usePost();
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      dispatch(clearError());
+      if (password !== confirmPassword) {
+        dispatch(setError("Password and Confirm Password do not match"));
+      }
+      const response = await postRequest("/api/v1/users/register", {
+        email,
+        username,
+        password,
+        confirmPassword,
+        fullName,
+      })
+
+      if (response.success) {
+        dispatch(login({
+          userData: response.data.registeredUser,
+          accessToken: response.data.accessToken,
+        }));
+        sessionStorage.setItem("accessToken", response.data.accessToken);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      dispatch(setError(error.message || "An error occurred while signing up"));
+    } finally {
+      setIsLoading(false);
+    }
+  } 
+
   return (
     <>
       <Card shadow={false} 
@@ -32,7 +81,7 @@ export default function SignupForm() {
           </Typography>
         </CardHeader>
         <CardBody>
-          <form action="#" className="flex flex-col gap-4 md:mt-12">
+          <form onSubmit={handleSignup} className="flex flex-col gap-4 md:mt-12">
             <div>
               <label htmlFor="fullName">
                 <Typography
@@ -44,6 +93,8 @@ export default function SignupForm() {
                 </Typography>
               </label>
               <Input
+                onChange={(e) => setFullName(e.target.value)}
+                required
                 id="fullName"
                 color="gray"
                 size="lg"
@@ -67,6 +118,8 @@ export default function SignupForm() {
                 </Typography>
               </label>
               <Input
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 id="email"
                 color="gray"
                 size="lg"
@@ -90,6 +143,7 @@ export default function SignupForm() {
                 </Typography>
               </label>
               <Input
+                onChange={(e) => setUsername(e.target.value)}
                 id="username"
                 color="gray"
                 size="lg"
@@ -113,6 +167,8 @@ export default function SignupForm() {
                 </Typography>
               </label>
               <Input
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 id="password"
                 color="gray"
                 size="lg"
@@ -136,6 +192,8 @@ export default function SignupForm() {
                 </Typography>
               </label>
               <Input
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
                 id="confirmPassword"
                 color="gray"
                 size="lg"
@@ -148,7 +206,7 @@ export default function SignupForm() {
                 }}
               />
             </div>
-            <Button size="lg" color="gray" fullWidth>
+            <Button size="lg" color="gray" fullWidth type="submit">
               Sign up
             </Button>
             <Button
