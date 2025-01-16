@@ -21,6 +21,7 @@ export function StickyNavbar() {
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logout());
+    sessionStorage.removeItem("accessToken");
     navigate("/");
   }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
  
 // @components
 import {
@@ -9,8 +9,49 @@ import {
   CardHeader,
   Typography,
 } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../store/features/authSlice";
+import { setError, clearError } from "../../store/features/errorSlice";
+import { usePost } from "../../hooks/useHttp"
  
 export default function LoginForm() {
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { postRequest } = usePost();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      dispatch(clearError());
+      const response = await postRequest("/api/v1/users/login", {
+        email,
+        username,
+        password,
+      })
+      if (response.success) {
+        dispatch(login({
+          userData: response.data.user,
+          accessToken: response.data.accessToken,
+        }));
+        sessionStorage.setItem("accessToken", response.data.accessToken);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      dispatch(setError(error.message));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
     <Card
@@ -30,7 +71,7 @@ export default function LoginForm() {
       </CardHeader>
       <CardBody>
         <form
-          action="#"
+          onSubmit={handleLogin}
           className="flex flex-col gap-4 md:mt-12"
         >
           <div>
@@ -44,6 +85,8 @@ export default function LoginForm() {
               </Typography>
             </label>
             <Input
+              onChange={(e) => setEmail(e.target.value)}
+              required={username ? false : true}
               id="email"
               color="gray"
               size="lg"
@@ -67,6 +110,8 @@ export default function LoginForm() {
               </Typography>
             </label>
             <Input
+              onChange={(e) => setUsername(e.target.value)}
+              required={email ? false : true}
               id="username"
               color="gray"
               size="lg"
@@ -90,6 +135,8 @@ export default function LoginForm() {
               </Typography>
             </label>
             <Input
+              onChange={(e) => setPassword(e.target.value)}
+              required
               id="password"
               color="gray"
               size="lg"
@@ -102,8 +149,8 @@ export default function LoginForm() {
               }}
             />
           </div>
-          <Button size="lg" color="gray" fullWidth>
-            Log in
+          <Button size="lg" color="gray" fullWidth type="submit" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Log in"}
           </Button>
           <Button
             variant="outlined"
