@@ -9,21 +9,10 @@ import {
   CardHeader,
   Typography,
 } from "@material-tailwind/react";
-import { X } from "lucide-react";
  
-export default function LoginForm({handleOpen}) {
+export default function LoginForm() {
   return (
     <>
-    <div className="flex justify-end w-full">
-      <Button
-        variant="text"
-        color="red"
-        onClick={handleOpen}
-        className="border border-red-200 p-2"
-      >
-        <X size={28} strokeWidth={3} />
-      </Button>
-    </div>
     <Card
       shadow={false}
     >

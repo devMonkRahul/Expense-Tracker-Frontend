@@ -77,12 +77,8 @@ export function StickyNavbar() {
         </div>
         <Collapse open={openNav}>
           <div className="flex items-center gap-x-1">
-            <Button fullWidth variant="text" size="sm" className="">
-              <span>Log In</span>
-            </Button>
-            <Button fullWidth variant="gradient" size="sm" className="">
-              <span>Sign in</span>
-            </Button>
+            <Modal type={"login"} buttonClass="inline-block" isFullWidthButton={true} />
+            <Modal type={"signup"} buttonClass="inline-block" isFullWidthButton={true}/>
           </div>
         </Collapse>
       </Navbar>
