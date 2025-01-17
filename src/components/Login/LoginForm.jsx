@@ -32,16 +32,13 @@ export default function LoginForm() {
     setIsLoading(true);
     try {
       dispatch(clearError());
-      const response = await postRequest("/api/v1/users/login", {
+      const response = await postRequest("/api/v1/user/login", {
         email,
         username,
         password,
       })
       if (response.success) {
-        dispatch(login({
-          userData: response.data.user,
-          accessToken: response.data.accessToken,
-        }));
+        dispatch(login());
         sessionStorage.setItem("accessToken", response.data.accessToken);
         navigate("/dashboard");
       }

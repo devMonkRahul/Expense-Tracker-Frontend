@@ -37,7 +37,7 @@ export default function SignupForm() {
       if (password !== confirmPassword) {
         dispatch(setError("Password and Confirm Password do not match"));
       }
-      const response = await postRequest("/api/v1/users/register", {
+      const response = await postRequest("/api/v1/user/register", {
         email,
         username,
         password,
@@ -46,10 +46,7 @@ export default function SignupForm() {
       })
 
       if (response.success) {
-        dispatch(login({
-          userData: response.data.registeredUser,
-          accessToken: response.data.accessToken,
-        }));
+        dispatch(login());
         sessionStorage.setItem("accessToken", response.data.accessToken);
         navigate("/dashboard");
       }
