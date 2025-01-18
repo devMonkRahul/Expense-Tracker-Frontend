@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import Sidebar from '../components/SideBar/SideBar'
+import { Sidebar } from '../components'
 import { useDispatch } from 'react-redux'
 import { setUserData, login } from '../store/features/authSlice'
 import { useGet } from '../hooks/useHttp'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Outlet } from 'react-router-dom'
 
 export default function DashBoard() {
 
@@ -41,7 +41,7 @@ export default function DashBoard() {
     <>
         <div className='flex'>
             <Sidebar />
-            <h1>hiii</h1> 
+            <Outlet />
         </div>   
     </>
   )

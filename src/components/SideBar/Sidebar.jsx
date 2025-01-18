@@ -1,74 +1,44 @@
 import {
   Card,
-  Typography,
   List,
   ListItem,
   ListItemPrefix,
-  ListItemSuffix,
-  Chip,
 } from "@material-tailwind/react";
-import {
-  PresentationChartBarIcon,
-  ShoppingBagIcon,
-  UserCircleIcon,
-  Cog6ToothIcon,
-  InboxIcon,
-  PowerIcon,
-} from "@heroicons/react/24/solid";
+import { BookMarked, Calculator, CircleDollarSign, House } from "lucide-react";
 
 export default function Sidebar() {
   return (
-    <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-      <div className="mb-2 p-4">
-        <Typography variant="h5" color="blue-gray">
-          Sidebar
-        </Typography>
-      </div>
+    <Card className="h-[calc(100vh-2rem)] w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20 overflow-hidden">
       <List>
-        <ListItem>
+        <ListItem className="hover:text-blue-500 hover:py-6 font-bold">
           <ListItemPrefix>
-            <PresentationChartBarIcon className="h-5 w-5" />
+            <House className="text-blue-300"/>
           </ListItemPrefix>
-          Dashboard
+            Overview
         </ListItem>
-        <ListItem>
+        <ListItem className="hover:text-green-500 hover:py-6 font-bold">
           <ListItemPrefix>
-            <ShoppingBagIcon className="h-5 w-5" />
+            <CircleDollarSign className="text-green-300"/>
           </ListItemPrefix>
-          E-Commerce
+          Incomes
         </ListItem>
-        <ListItem>
+        <ListItem className="hover:text-red-500 hover:py-6 font-bold">
           <ListItemPrefix>
-            <InboxIcon className="h-5 w-5" />
+            <CircleDollarSign className="text-red-300"/>
           </ListItemPrefix>
-          Inbox
-          <ListItemSuffix>
-            <Chip
-              value="14"
-              size="sm"
-              variant="ghost"
-              color="blue-gray"
-              className="rounded-full"
-            />
-          </ListItemSuffix>
+          Expenses
         </ListItem>
-        <ListItem>
+        <ListItem className="hover:text-brown-500 hover:py-6 font-bold">
           <ListItemPrefix>
-            <UserCircleIcon className="h-5 w-5" />
+            <Calculator className="text-brown-300"/>
           </ListItemPrefix>
-          Profile
+          Budgets
         </ListItem>
-        <ListItem>
+        <ListItem className="hover:text-brown-500 hover:py-6 font-bold">
           <ListItemPrefix>
-            <Cog6ToothIcon className="h-5 w-5" />
+            <BookMarked className="text-brown-300"/>
           </ListItemPrefix>
-          Settings
-        </ListItem>
-        <ListItem>
-          <ListItemPrefix>
-            <PowerIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Log Out
+          Reports
         </ListItem>
       </List>
     </Card>
