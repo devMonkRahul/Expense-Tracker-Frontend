@@ -1,18 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Navbar,
   Collapse,
   Typography,
   Button,
   IconButton,
+  Drawer,
+  Card,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../index";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../store/features/authSlice";
+import { Power, Menu } from "lucide-react";
+import { SidebarContent } from "../index";
  
 export function StickyNavbar() {
-  const [openNav, setOpenNav] = React.useState(false);
+  const [openNav, setOpenNav] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [openSidebar, setOpenSidebar] = useState(true);
  
   const navigate = useNavigate();
 
@@ -28,14 +34,22 @@ export function StickyNavbar() {
   React.useEffect(() => {
     window.addEventListener(
       "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false),
+      () => window.innerWidth >= 960 && setOpenNav(false) && setOpenSidebar(false),
     );
   }, []);
  
   return (
-    <div className="max-h-[768px] w-[100%] ">
+    <>
+    <div className="max-h-[768px] w-full ">
       <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-3">
         <div className="flex items-center justify-between text-blue-gray-900">
+          { openSidebar && <IconButton 
+            variant="text" 
+            className="lg:hidden" 
+            onClick={() => setOpenDrawer(!openDrawer)}
+          >
+            <Menu className="h-6 w-6" />
+          </IconButton> }
           <Typography
             className="mr-4 cursor-pointer font-bold text-lg"
             onClick={() => navigate("/")}
@@ -76,19 +90,7 @@ export function StickyNavbar() {
                   />
                 </svg>
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <Power strokeWidth={3} />
               )}
             </IconButton>
           </div>
@@ -103,5 +105,15 @@ export function StickyNavbar() {
         </Collapse>
       </Navbar>
     </div>
+    {openSidebar && <Drawer
+      open={openDrawer}
+      onClose={() => setOpenDrawer(!openDrawer)}
+      className="md:hidden px-4"
+    >
+      <Card className="h-full w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20">
+        <SidebarContent />
+      </Card>
+    </Drawer>}
+    </>
   );
 }

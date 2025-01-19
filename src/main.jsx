@@ -7,6 +7,7 @@ import store from "./store/store"
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ErrorPopup from './utils/Popup/ErrorPopup/ErrorPopup.jsx'
 import DashBoard from './pages/DashBoard.jsx'
+import { Overview } from './components'
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/dashboard/overview',
-            element: <h1>Overview</h1>
+            element: <Overview />
           }
         ]
       }

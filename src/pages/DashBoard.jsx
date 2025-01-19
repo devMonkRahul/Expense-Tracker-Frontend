@@ -13,28 +13,28 @@ export default function DashBoard() {
 
     const token = sessionStorage.getItem('accessToken');
     
-    useEffect(() => {
-        if (token) {
-            const getUserProfile = async () => {
-                try {
-                    const response = await getRequest('/api/v1/user/profile', token);
-                    if (response.success) {
-                        dispatch(login());
-                        dispatch(setUserData({
-                            userData: response.data,
-                            accessToken: token
-                        }));
-                    }
-                } catch (error) {
-                    console.error(error);
-                    navigate('/');
-                }
-            }
-            getUserProfile();
-        } else {
-            navigate('/');
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (token) {
+    //         const getUserProfile = async () => {
+    //             try {
+    //                 const response = await getRequest('/api/v1/user/profile', token);
+    //                 if (response.success) {
+    //                     dispatch(login());
+    //                     dispatch(setUserData({
+    //                         userData: response.data,
+    //                         accessToken: token
+    //                     }));
+    //                 }
+    //             } catch (error) {
+    //                 console.error(error);
+    //                 navigate('/');
+    //             }
+    //         }
+    //         getUserProfile();
+    //     } else {
+    //         navigate('/');
+    //     }
+    // }, []);
 
     
   return (
