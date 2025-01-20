@@ -19,7 +19,7 @@ export function SidebarContent() {
     <List>
       <ListItem
         className="hover:text-blue-500 hover:py-6 font-bold"
-        onClick={() => navigate("/dashboard/overview")}
+        onClick={() => navigate("/dashboard")}
       >
         <ListItemPrefix>
           <HomeIcon className="text-blue-300" />

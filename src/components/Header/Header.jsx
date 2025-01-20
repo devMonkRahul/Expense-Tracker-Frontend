@@ -106,11 +106,11 @@ export function StickyNavbar() {
       </Navbar>
     </div>
     {openSidebar && <Drawer
-      open={openDrawer}
+      open={openDrawer} 
       onClose={() => setOpenDrawer(!openDrawer)}
-      className="md:hidden px-4"
+      className="px-4"
     >
-      <Card className="h-full w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20">
+      <Card className="h-full w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20" onClick={() => setOpenDrawer(!openDrawer)}>
         <SidebarContent />
       </Card>
     </Drawer>}
