@@ -32,7 +32,10 @@ export function SidebarContent() {
         </ListItemPrefix>
         Incomes
       </ListItem>
-      <ListItem className="hover:text-red-500 hover:py-6 font-bold">
+      <ListItem 
+        className="hover:text-red-500 hover:py-6 font-bold"
+        onClick={() => navigate("/dashboard/expenses")}
+      >
         <ListItemPrefix>
           <CircleDollarSign className="text-red-300" />
         </ListItemPrefix>
@@ -55,19 +58,20 @@ export function SidebarContent() {
 }
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     window.addEventListener("resize", () => {
       window.innerWidth >= 960 ? setIsOpen(true) : setIsOpen(false);
     });
+    window.innerWidth >= 960 ? setIsOpen(true) : setIsOpen(false)
   }, []);
 
-  return isOpen && (
+  return isOpen ? (
     <>
-      <Card className="hidden md:block h-[100vh] w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20">
+      <Card className="hidden md:block w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20 h-[calc(100vh-4.1rem)]">
         <SidebarContent />
       </Card>
     </>
-  );
+  ) : null;
 }

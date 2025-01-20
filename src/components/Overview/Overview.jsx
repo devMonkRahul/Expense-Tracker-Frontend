@@ -48,7 +48,7 @@ const MetricCard = ({ title, value, change, icon, changeColor }) => (
 
 export default function Overview() {
   return (
-    <div className="min-h-screen bg-gray-50/50 p-8 w-full">
+    <div className="bg-gray-50/50 p-8 w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
           title="Total Balance"

@@ -4,5 +4,6 @@ import Modal from "./Modal/Modal";
 import SignupForm from "./Signup/SignupForm";
 import Sidebar, { SidebarContent } from "./SideBar/Sidebar";
 import Overview from "./Overview/Overview";
+import Expenses from "./Expenses/Expenses";
 
-export { StickyNavbar, LoginForm, Modal, SignupForm, Sidebar, SidebarContent, Overview };
+export { StickyNavbar, LoginForm, Modal, SignupForm, Sidebar, SidebarContent, Overview, Expenses };
