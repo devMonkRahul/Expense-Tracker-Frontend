@@ -11,7 +11,7 @@ export default function TransactionTable({ transactions, type="income" }) {
           <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
-                {["DATE", "DESCRIPTION", "CATEGORY", "AMOUNT", "STATUS", ""].map((head) => (
+                {["DATE", "TITLE", "DESCRIPTION", "CATEGORY", "AMOUNT", "EDIT"].map((head) => (
                   <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
                     <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">
                       {head}
@@ -26,6 +26,11 @@ export default function TransactionTable({ transactions, type="income" }) {
                   <td className="p-4">
                     <Typography variant="small" color="blue-gray" className="font-normal">
                       {date}
+                    </Typography>
+                  </td>
+                  <td className="p-4">
+                    <Typography variant="small" color="blue-gray" className="font-normal">
+                      Title
                     </Typography>
                   </td>
                   <td className="p-4">
@@ -45,9 +50,6 @@ export default function TransactionTable({ transactions, type="income" }) {
                     <Typography variant="small" color={color} className="font-normal">
                       ${amount}
                     </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Chip size="sm" variant="ghost" value={status} color="green" />
                   </td>
                   <td className="p-4">
                     <IconButton variant="text" color="blue">
