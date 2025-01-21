@@ -21,17 +21,17 @@ const categories = [
 const transactions = [
   {
     date: "2023-06-15",
-    description: "Grocery Shopping",
+    title: "Grocery Shopping",
+    description: "Purchase Rice and Dal",
     category: "Food & Dining",
     amount: 156.85,
-    status: "Completed",
   },
   {
     date: "2023-06-14",
-    description: "Uber Ride",
+    title: "Uber Ride",
+    description: "Shuttle trip to the airport",
     category: "Transportation",
     amount: 24.5,
-    status: "Completed",
   },
 ];
 
@@ -39,15 +39,19 @@ export default function Incomes() {
   return (
     <div className="bg-gray-50/50 p-8 w-full">
       <IncomeHeader />
-      <div className="flex flex-col lg:flex-row gap-6 mb-6">
-        <div className="w-full lg:w-2/3">
-          <Chart data={incomeChartData} />
-        </div>
-        <div className="w-full lg:w-1/3">
-          <CategoryBreakdown categories={categories} />
-        </div>
-      </div>
-      <TransactionTable transactions={transactions} type="income" />
+      {transactions.length !== 0 && (
+        <>
+          <div className="flex flex-col lg:flex-row gap-6 mb-6">
+            <div className="w-full lg:w-2/3">
+              <Chart data={incomeChartData} />
+            </div>
+            <div className="w-full lg:w-1/3">
+              <CategoryBreakdown categories={categories} />
+            </div>
+          </div>
+          <TransactionTable transactions={transactions} type="income" />
+        </>
+      )}
     </div>
   );
 }

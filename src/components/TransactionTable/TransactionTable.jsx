@@ -21,7 +21,7 @@ export default function TransactionTable({ transactions, type="income" }) {
               </tr>
             </thead>
             <tbody>
-              {transactions.map(({ date, description, category, amount, status }, index) => (
+              {transactions.map(({ date, description, category, amount, title }, index) => (
                 <tr key={index} className="even:bg-blue-gray-50/50">
                   <td className="p-4">
                     <Typography variant="small" color="blue-gray" className="font-normal">
@@ -30,7 +30,7 @@ export default function TransactionTable({ transactions, type="income" }) {
                   </td>
                   <td className="p-4">
                     <Typography variant="small" color="blue-gray" className="font-normal">
-                      Title
+                      {title}
                     </Typography>
                   </td>
                   <td className="p-4">
