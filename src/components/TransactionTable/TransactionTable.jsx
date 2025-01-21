@@ -1,24 +1,9 @@
+import React from 'react'
 import { Card, CardBody, Typography, Chip, IconButton } from "@material-tailwind/react"
 import { Pencil } from "lucide-react"
 
-const transactions = [
-  {
-    date: "2023-06-15",
-    description: "Grocery Shopping",
-    category: "Food & Dining",
-    amount: -156.85,
-    status: "Completed",
-  },
-  {
-    date: "2023-06-14",
-    description: "Uber Ride",
-    category: "Transportation",
-    amount: -24.5,
-    status: "Completed",
-  },
-]
-
-export default function TransactionTable() {
+export default function TransactionTable({ transactions, type="income" }) {
+  const color = type === "expense" ? "red" : "green"
   return (
     <Card>
       <CardBody>
@@ -57,7 +42,7 @@ export default function TransactionTable() {
                     />
                   </td>
                   <td className="p-4">
-                    <Typography variant="small" color="red" className="font-normal">
+                    <Typography variant="small" color={color} className="font-normal">
                       ${amount}
                     </Typography>
                   </td>
@@ -78,4 +63,3 @@ export default function TransactionTable() {
     </Card>
   )
 }
-

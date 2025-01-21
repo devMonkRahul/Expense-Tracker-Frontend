@@ -1,19 +1,23 @@
-import React, { useEffect } from 'react'
-import { Sidebar } from '../components'
-import { useDispatch } from 'react-redux'
-import { setUserData, login } from '../store/features/authSlice'
-import { useGet } from '../hooks/useHttp'
-import { useNavigate, Outlet } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { Sidebar } from "../components";
+import { useDispatch } from "react-redux";
+import { setUserData, login } from "../store/features/authSlice";
+import { useGet } from "../hooks/useHttp";
+import { useNavigate, Outlet } from "react-router-dom";
 
 export default function DashBoard() {
+  const [isOpen, setIsOpen] = useState(false);
+  // const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  // const { getRequest } = useGet();
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { getRequest } = useGet();
+  // const token = sessionStorage.getItem('accessToken');
 
-    const token = sessionStorage.getItem('accessToken');
-    
-    // useEffect(() => {
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      window.outerWidth >= 960 ? setIsOpen(true) : setIsOpen(false);
+    });
+    window.outerWidth >= 960 ? setIsOpen(true) : setIsOpen(false);
     //     if (token) {
     //         const getUserProfile = async () => {
     //             try {
@@ -34,15 +38,16 @@ export default function DashBoard() {
     //     } else {
     //         navigate('/');
     //     }
-    // }, []);
+  }, []);
 
-    
-  return (
+  return isOpen ? (
     <>
-        <div className='flex'>
-            <Sidebar />
-            <Outlet />
-        </div>   
+      <div className="flex">
+        <Sidebar />
+        <Outlet />
+      </div>
     </>
-  )
+  ) : (
+    <Outlet />
+  );
 }

@@ -5,5 +5,9 @@ import SignupForm from "./Signup/SignupForm";
 import Sidebar, { SidebarContent } from "./SideBar/Sidebar";
 import Overview from "./Overview/Overview";
 import Expenses from "./Expenses/Expenses";
+import Chart from "./Chart/Chart";
+import CategoryBreakdown from "./CategoryBreakdown/CategoryBreakdown";
+import TransactionTable from "./TransactionTable/TransactionTable";
+import Incomes from "./Incomes/Incomes";
 
-export { StickyNavbar, LoginForm, Modal, SignupForm, Sidebar, SidebarContent, Overview, Expenses };
+export { StickyNavbar, LoginForm, Modal, SignupForm, Sidebar, SidebarContent, Overview, Expenses, Chart, CategoryBreakdown, TransactionTable, Incomes };

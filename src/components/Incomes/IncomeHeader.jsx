@@ -1,12 +1,13 @@
+import React from 'react'
 import { Button, Select, Option } from "@material-tailwind/react";
 import { Plus, Search } from "lucide-react";
 
-export default function ExpenseHeader() {
+export default function IncomeHeader() {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
       <div className="flex gap-4">
         <Button className="flex items-center gap-2 bg-blue-500" size="sm">
-          <Plus className="h-4 w-4" /> Add Expense
+          <Plus className="h-4 w-4" /> Add Income
         </Button>
         <Select label="All Categories" size="md">
           <Option value="all">All Categories</Option>
@@ -26,5 +27,5 @@ export default function ExpenseHeader() {
         />
       </div>
     </div>
-  );
+  )
 }
