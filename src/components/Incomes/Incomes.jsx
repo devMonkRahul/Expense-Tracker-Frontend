@@ -10,6 +10,26 @@ const incomeChartData = [
   { name: "Entertainment", value: 200, color: "#f54242" },
 ];
 
+const incomeCategories = [
+    { name: "Salary", color: "#FF5733", value: 1000 },
+    { name: "Freelance", color: "#33FF57", value: 1000 },
+    { name: "Business Income", color: "#3357FF", value: 1000 },
+    { name: "Commission", color: "#FF33A1", value: 1000 },
+    { name: "Bonuses", color: "#FFC300", value: 1000 },
+    { name: "Pension", color: "#DAF7A6", value: 1000 },
+    { name: "Part-time Job", color: "#8E44AD", value: 1000 },
+    { name: "Overtime Pay", color: "#2ECC71", value: 1000 },
+    { name: "Rental Income", color: "#E74C3C", value: 1000 },
+    { name: "Gifts", color: "#F1C40F", value: 1000 },
+    { name: "Lottery Winnings", color: "#1ABC9C", value: 1000 },
+    { name: "Awards/Prizes", color: "#9B59B6", value: 1000 },
+    { name: "Tax Refunds", color: "#34495E", value: 1000 },
+    { name: "Selling Assets", color: "#3498DB", value: 1000 },
+    { name: "Scholarships", color: "#E67E22", value: 1000 },
+    { name: "Investment Income", color: "#16A085", value: 1000 },
+    { name: "Interest Income", color: "#C0392B", value: 1000 }
+]
+
 const categories = [
   { name: "Food & Dining", amount: 850, color: "blue" },
   { name: "Transportation", amount: 450, color: "green" },
