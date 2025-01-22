@@ -1,7 +1,8 @@
 import React from "react";
 import { Card, CardBody, Typography, Progress } from "@material-tailwind/react";
 
-export default function CategoryBreakdown({ categories }) {
+export default function CategoryBreakdown({ categories, categoryColors, type="income" }) {
+  const total = categories.reduce((acc, category) => acc + category.amount, 0);
   return (
     <Card className="h-full">
       <CardBody>
@@ -10,15 +11,15 @@ export default function CategoryBreakdown({ categories }) {
         </Typography>
         <div className="flex flex-col gap-4">
           {categories.map((category) => (
-            <div key={category.name}>
+            <div key={category.category}>
               <div className="flex justify-between mb-2">
-                <Typography color="blue-gray">{category.name}</Typography>
+                <Typography color="blue-gray">{category.category}</Typography>
                 <Typography color="blue-gray">${category.amount}</Typography>
               </div>
               <Progress
-                value={100}
+                value={(category.amount / total) * 100}
                 size="sm"
-                color={category.color}
+                color={categoryColors[category.category]}
                 className="h-1"
               />
             </div>
@@ -29,7 +30,7 @@ export default function CategoryBreakdown({ categories }) {
         <Typography
           variant="h3"
           color="blue-gray"
-          className="justify-between text-red-400"
+          className={`justify-between ${type === "income" ? "text-green-500" : "text-red-500"}`}
         >
           Total: $
           {categories.reduce((acc, category) => acc + category.amount, 0)}

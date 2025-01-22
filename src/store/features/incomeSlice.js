@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     incomes: [],
-    loading: true,
 }
 
 const incomesSlice = createSlice({
@@ -10,11 +9,7 @@ const incomesSlice = createSlice({
     initialState,
     reducers: {
         setIncomes: (state, action) => {
-            state.incomes = action.payload;
-            state.loading = false;
-        },
-        setLoading: (state, action) => {
-            state.loading = action.payload;
+            state.incomes = action.payload;            
         },
         addIncome: (state, action) => {
             state.incomes.push(action.payload);
@@ -32,6 +27,6 @@ const incomesSlice = createSlice({
     }
 })
 
-export const { setIncomes, setLoading, addIncome, deleteIncome, updateIncome } = incomesSlice.actions;
+export const { setIncomes, addIncome, deleteIncome, updateIncome } = incomesSlice.actions;
 
 export default incomesSlice.reducer;

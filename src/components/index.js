@@ -9,5 +9,20 @@ import Chart from "./Chart/Chart";
 import CategoryBreakdown from "./CategoryBreakdown/CategoryBreakdown";
 import TransactionTable from "./TransactionTable/TransactionTable";
 import Incomes from "./Incomes/Incomes";
+import AddTransactionModal from "./Modal/AddTransactionModal";
 
-export { StickyNavbar, LoginForm, Modal, SignupForm, Sidebar, SidebarContent, Overview, Expenses, Chart, CategoryBreakdown, TransactionTable, Incomes };
+export {
+  StickyNavbar,
+  LoginForm,
+  Modal,
+  SignupForm,
+  Sidebar,
+  SidebarContent,
+  Overview,
+  Expenses,
+  Chart,
+  CategoryBreakdown,
+  TransactionTable,
+  Incomes,
+  AddTransactionModal,
+};

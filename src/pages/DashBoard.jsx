@@ -7,37 +7,37 @@ import { useNavigate, Outlet } from "react-router-dom";
 
 export default function DashBoard() {
   const [isOpen, setIsOpen] = useState(false);
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const { getRequest } = useGet();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { getRequest } = useGet();
 
-  // const token = sessionStorage.getItem('accessToken');
+  const token = sessionStorage.getItem('accessToken');
 
   useEffect(() => {
     window.addEventListener("resize", () => {
       window.outerWidth >= 960 ? setIsOpen(true) : setIsOpen(false);
     });
     window.outerWidth >= 960 ? setIsOpen(true) : setIsOpen(false);
-    //     if (token) {
-    //         const getUserProfile = async () => {
-    //             try {
-    //                 const response = await getRequest('/api/v1/user/profile', token);
-    //                 if (response.success) {
-    //                     dispatch(login());
-    //                     dispatch(setUserData({
-    //                         userData: response.data,
-    //                         accessToken: token
-    //                     }));
-    //                 }
-    //             } catch (error) {
-    //                 console.error(error);
-    //                 navigate('/');
-    //             }
-    //         }
-    //         getUserProfile();
-    //     } else {
-    //         navigate('/');
-    //     }
+        if (token) {
+            const getUserProfile = async () => {
+                try {
+                    const response = await getRequest('/api/v1/user/profile', token);
+                    if (response.success) {
+                        dispatch(login());
+                        dispatch(setUserData({
+                            userData: response.data,
+                            accessToken: token
+                        }));
+                    }
+                } catch (error) {
+                    console.error(error);
+                    navigate('/');
+                }
+            }
+            getUserProfile();
+        } else {
+            navigate('/');
+        }
   }, []);
 
   return isOpen ? (

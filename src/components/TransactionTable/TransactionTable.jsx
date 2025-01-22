@@ -2,8 +2,16 @@ import React from 'react'
 import { Card, CardBody, Typography, Chip, IconButton } from "@material-tailwind/react"
 import { Pencil } from "lucide-react"
 
-export default function TransactionTable({ transactions, type="income" }) {
+export default function TransactionTable({ transactions, type="income", categoryColors }) {
   const color = type === "expense" ? "red" : "green"
+  const formatDate = (mongoDate) => {
+    const date = new Date(mongoDate);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = date.getFullYear();  
+    return `${day}-${month}-${year}`;
+  }
   return (
     <Card>
       <CardBody>
@@ -25,7 +33,7 @@ export default function TransactionTable({ transactions, type="income" }) {
                 <tr key={index} className="even:bg-blue-gray-50/50">
                   <td className="p-4">
                     <Typography variant="small" color="blue-gray" className="font-normal">
-                      {date}
+                      {formatDate(date)}
                     </Typography>
                   </td>
                   <td className="p-4">
@@ -43,7 +51,7 @@ export default function TransactionTable({ transactions, type="income" }) {
                       size="sm"
                       variant="ghost"
                       value={category}
-                      color={category === "Food & Dining" ? "blue" : "green"}
+                      color={categoryColors[category]}
                     />
                   </td>
                   <td className="p-4">

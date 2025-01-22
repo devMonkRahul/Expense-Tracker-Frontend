@@ -2,7 +2,12 @@ import React from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
-export default function Chart({ data }) {
+export default function Chart({ data, categoryColors }) {
+  data = data.map((item) => ({
+    name: item.category,
+    value: item.amount,
+  }));
+  
   return (
     <Card>
       <CardBody>
@@ -22,7 +27,7 @@ export default function Chart({ data }) {
                 dataKey="value"
               >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                  <Cell key={`cell-${index}`} fill={categoryColors[entry.name]} />
                 ))}
               </Pie>
               <Legend />

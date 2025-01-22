@@ -1,21 +1,27 @@
 import React from 'react'
-import { Button, Select, Option } from "@material-tailwind/react";
-import { Plus, Search } from "lucide-react";
+import { Select, Option } from "@material-tailwind/react";
+import { Search } from "lucide-react";
+import { AddTransactionModal } from '../index';
 
 export default function IncomeHeader() {
+  const options = [
+    "Salary",
+    "Freelance",
+    "Business Income",
+    "Investment Income",
+    "Rental Income",
+  ]
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
       <div className="flex gap-4">
-        <Button className="flex items-center gap-2 bg-blue-500" size="sm">
-          <Plus className="h-4 w-4" /> Add Income
-        </Button>
-        <Select label="All Categories" size="md">
-          <Option value="all">All Categories</Option>
-          <Option value="food">Food & Dining</Option>
-          <Option value="transportation">Transportation</Option>
-          <Option value="shopping">Shopping</Option>
-          <Option value="utilities">Utilities</Option>
-          <Option value="entertainment">Entertainment</Option>
+        <AddTransactionModal options={options} type='income'/>
+        <Select label="All Categories" size="lg">
+          <Option value="All">All Categories</Option>
+          <Option value="Salary">Salary</Option>
+          <Option value="Freelance">Freelance</Option>
+          <Option value="Business Income">Business Income</Option>
+          <Option value="Investment Income">Investment Income</Option>
+          <Option value="Rental Income">Rental Income</Option>
         </Select>
       </div>
 

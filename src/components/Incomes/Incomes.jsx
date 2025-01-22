@@ -1,64 +1,112 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setIncomes } from "../../store/features/incomeSlice";
+import { setError } from "../../store/features/errorSlice";
+import { logout } from "../../store/features/authSlice";
 import IncomeHeader from "./IncomeHeader";
 import { Chart, CategoryBreakdown, TransactionTable } from "../index";
+import { useGet } from "../../hooks/useHttp";
+import Lottie from "react-lottie";
+import animationData from "../../assets/Lottie/loader.json";
 
-const incomeChartData = [
-  { name: "Food & Dining", value: 850, color: "#4287f5" },
-  { name: "Transportation", value: 450, color: "#42f5a7" },
-  { name: "Shopping", value: 600, color: "#a742f5" },
-  { name: "Utilities", value: 300, color: "#f5d742" },
-  { name: "Entertainment", value: 200, color: "#f54242" },
-];
+const categoryColors = {
+  Salary: "blue",
+  Freelance: "green",
+  "Business Income": "purple",
+  "Investment Income": "yellow",
+  "Rental Income": "red",
+};
 
-const incomeCategories = [
-    { "name": "Salary", "value": 3000, "color": "#FF5733" },
-    { "name": "Freelance", "value": 1200, "color": "#33FF57" },
-    { "name": "Business Income", "value": 2000, "color": "#3357FF" },
-    { "name": "Investment Income", "value": 800, "color": "#FFC300" },
-    { "name": "Rental Income", "value": 1500, "color": "#E74C3C" }
-  ]
-  
+const pieChartColors = {
+  Salary : "#4287f5",
+  Freelance : "#42f5a7",
+  "Business Income" : "#a742f5",
+  "Investment Income" : "#f5d742",
+  "Rental Income" : "#f54242",
+}
 
-const categories = [
-  { name: "Food & Dining", amount: 850, color: "blue" },
-  { name: "Transportation", amount: 450, color: "green" },
-  { name: "Shopping", amount: 600, color: "purple" },
-  { name: "Utilities", amount: 200, color: "yellow" },
-  { name: "Entertainment", amount: 500, color: "red" },
-];
-
-const transactions = [
-  {
-    date: "2023-06-15",
-    title: "Grocery Shopping",
-    description: "Purchase Rice and Dal",
-    category: "Food & Dining",
-    amount: 156.85,
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
   },
-  {
-    date: "2023-06-14",
-    title: "Uber Ride",
-    description: "Shuttle trip to the airport",
-    category: "Transportation",
-    amount: 24.5,
-  },
-];
+};
 
 export default function Incomes() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [incomes, setIncome] = useState([]);
+
+  const token = sessionStorage.getItem("accessToken");
+  const { getRequest } = useGet();
+
+  useEffect(() => {
+    if (token) {
+      setIsLoading(true);
+      const getIncomes = async () => {
+        try {
+          const response = await getRequest(
+            "/api/v1/transaction/getIncomes",
+            token
+          );
+          if (response.success) {
+            dispatch(setIncomes(response.data));
+            setIncome(response.data);
+          }
+        } catch (error) {
+          dispatch(setError(error.message || "An error occurred"));
+          dispatch(logout());
+          console.error(error);
+          navigate("/");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      getIncomes();
+    } else {
+      dispatch(setIncomes([]));
+      navigate("/");
+    }
+  }, []);
+
+  const data = incomes.reduce((acc, curr) => {
+    const existing = acc.find((item) => item.category === curr.category);
+    if (existing) {
+      existing.amount += curr.amount;
+    } else {
+      acc.push({...curr});
+    }
+    return acc;
+  }, [])
+ 
+
   return (
     <div className="bg-gray-50/50 p-8 w-full">
       <IncomeHeader />
-      {transactions.length !== 0 && (
+      {!isLoading && incomes.length !== 0 && (
         <>
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
             <div className="w-full lg:w-2/3">
-              <Chart data={incomeChartData} />
+              <Chart data={data} categoryColors={pieChartColors}/>
             </div>
             <div className="w-full lg:w-1/3">
-              <CategoryBreakdown categories={categories} />
+              <CategoryBreakdown categories={data} categoryColors={categoryColors} />
             </div>
           </div>
-          <TransactionTable transactions={transactions} type="income" />
+          <TransactionTable
+            transactions={incomes}
+            type="income"
+            categoryColors={categoryColors}
+          />
+        </>
+      )}
+      {isLoading && (
+        <>
+          <Lottie options={defaultOptions} height={500} width={500} />
         </>
       )}
     </div>
