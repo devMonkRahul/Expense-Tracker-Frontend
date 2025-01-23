@@ -16,6 +16,7 @@ import { Power, Menu } from "lucide-react";
 import { SidebarContent } from "../index";
  
 export function StickyNavbar() {
+  const token = sessionStorage.getItem("accessToken");
   const [openNav, setOpenNav] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(true);
@@ -43,7 +44,7 @@ export function StickyNavbar() {
     <div className="max-h-[768px] w-full sticky top-0 z-10">
       <Navbar className="z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-3">
         <div className="flex items-center justify-between text-blue-gray-900">
-          { openSidebar && <IconButton 
+          { token && openSidebar && <IconButton 
             variant="text" 
             className="lg:hidden" 
             onClick={() => setOpenDrawer(!openDrawer)}
