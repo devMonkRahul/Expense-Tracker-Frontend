@@ -19,10 +19,13 @@ import { usePost } from "../../hooks/useHttp";
 import { setError } from "../../store/features/errorSlice";
 import { logout } from "../../store/features/authSlice";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function AddTransactionModal({ options, type = "income" }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState(new Date());
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("accessToken");
 
@@ -119,28 +122,45 @@ export default function AddTransactionModal({ options, type = "income" }) {
                 ))}
               </Select>
             </div>
-            <div className="w-full">
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="mb-2 text-left font-medium"
-              >
-                Amount
-              </Typography>
-              <Input
-                color="gray"
-                size="lg"
-                placeholder="eg. 5000"
-                name="size"
-                type="number"
-                className="!border-t-blue-gray-200 placeholder:text-blue-gray-300 placeholder:opacity-100  focus:!border-t-gray-900 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                containerProps={{
-                  className: "!min-w-full",
-                }}
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-              />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:w-1/2">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="mb-2 text-left font-medium"
+                >
+                  Amount
+                </Typography>
+                <Input
+                  color="gray"
+                  size="lg"
+                  placeholder="eg. 5000"
+                  name="size"
+                  type="number"
+                  className="!border-t-blue-gray-200 placeholder:text-blue-gray-300 placeholder:opacity-100  focus:!border-t-gray-900 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  containerProps={{
+                    className: "!min-w-full",
+                  }}
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                />
+              </div>
+              <div className="w-full sm:w-1/2">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="mb-2 text-left font-medium"
+                >
+                  Date
+                </Typography>
+                  <DatePicker 
+                    selected={date} 
+                    onChange={(date) => setDate(date)} 
+                    className="w-full p-2 border border-gray-400 rounded-md focus:ring-2"
+                    wrapperClassName="w-full"
+                  />
+              </div>
             </div>
             <div>
               <Typography
