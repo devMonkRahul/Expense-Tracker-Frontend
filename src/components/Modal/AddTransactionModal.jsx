@@ -30,12 +30,10 @@ export default function AddTransactionModal({ options, type = "income" }) {
   const token = sessionStorage.getItem("accessToken");
 
   const handleOpen = () => setOpen(!open);
-  console.log(date);
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleOpen();
+    // handleOpen();
     // if (token) {
     //     setLoading(true);
     //     try {
@@ -139,6 +137,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                   placeholder="eg. 5000"
                   name="size"
                   type="number"
+                  required
                   className="!border-t-blue-gray-200 placeholder:text-blue-gray-300 placeholder:opacity-100  focus:!border-t-gray-900 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   containerProps={{
                     className: "!min-w-full",
@@ -177,6 +176,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                 size="lg"
                 placeholder="eg. Description"
                 name="name"
+                required
                 className="placeholder:opacity-100 focus:!border-t-gray-900"
                 containerProps={{
                   className: "!min-w-full",
