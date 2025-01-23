@@ -7,7 +7,7 @@ import { logout } from "../../store/features/authSlice";
 import IncomeHeader from "./IncomeHeader";
 import { Chart, CategoryBreakdown, TransactionTable } from "../index";
 import { useGet } from "../../hooks/useHttp";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader.json";
 
 const categoryColors = {
@@ -25,15 +25,6 @@ const pieChartColors = {
   "Investment Income" : "#f5d742",
   "Rental Income" : "#f54242",
 }
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: animationData,
-  rendererSettings: {
-    preserveAspectRatio: "xMidYMid slice",
-  },
-};
 
 export default function Incomes() {
   const dispatch = useDispatch();
@@ -106,7 +97,12 @@ export default function Incomes() {
       )}
       {isLoading && (
         <>
-          <Lottie options={defaultOptions} height={500} width={500} />
+          <Lottie 
+            animationData={animationData}
+            loop={true}
+            height={500} 
+            width={500} 
+          />
         </>
       )}
     </div>

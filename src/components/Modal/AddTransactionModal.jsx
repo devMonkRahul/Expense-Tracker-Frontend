@@ -30,6 +30,8 @@ export default function AddTransactionModal({ options, type = "income" }) {
   const token = sessionStorage.getItem("accessToken");
 
   const handleOpen = () => setOpen(!open);
+  console.log(date);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
