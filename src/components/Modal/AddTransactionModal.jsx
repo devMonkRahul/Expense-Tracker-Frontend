@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Input,
   Option,
@@ -21,35 +21,69 @@ import { logout } from "../../store/features/authSlice";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { use } from "react";
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toISOString().split("T")[0];
+};
 
 export default function AddTransactionModal({ options, type = "income" }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [date, setDate] = useState(new Date());
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("accessToken");
+  const navigate = useNavigate();
+  const { postRequest } = usePost();
+
+  const [date, setDate] = useState(new Date());
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleOpen = () => setOpen(!open);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // handleOpen();
-    // if (token) {
-    //     setLoading(true);
-    //     try {
-    //         if (type === "income") {
-    //             const response = await postRequest("/api/v1/transaction/addIncome", {}, token);
-    //         }
-    //     } catch (error) {
-    //         dispatch(setError(error.message || "An error occurred while adding transaction"));
-    //         console.error(error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // } else {
-    //     dispatch(logout());
-    //     navigate("/");
-    // }
+
+    if (token) {
+      setLoading(true);
+      try {
+        if (type === "income") {
+          const response = await postRequest(
+            "/api/v1/transaction/addIncome",
+            {
+              title,
+              category,
+              amount,
+              date: formatDate(date),
+              description,  
+            },
+            token
+          );
+
+          if (response.success) {
+            console.log(response.data);
+            dispatch(addIncome(response.data));
+            navigate('/dashboard/incomes');
+          }
+        }
+        handleOpen();
+      } catch (error) {
+        dispatch(
+          setError(
+            error.message || "An error occurred while adding transaction"
+          )
+        );
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      dispatch(logout());
+      navigate("/");
+    }
   };
 
   return (
@@ -101,6 +135,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                 labelProps={{
                   className: "hidden",
                 }}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
             <div>
@@ -116,9 +151,12 @@ export default function AddTransactionModal({ options, type = "income" }) {
                 labelProps={{
                   className: "hidden",
                 }}
+                onChange={(value) => setCategory(value)}
               >
                 {options.map((option) => (
-                  <Option key={option}>{option}</Option>
+                  <Option key={option} value={option}>
+                    {option}
+                  </Option>
                 ))}
               </Select>
             </div>
@@ -145,6 +183,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
+                  onChange={(e) => setAmount(e.target.value)}
                 />
               </div>
               <div className="w-full sm:w-1/2">
@@ -155,12 +194,12 @@ export default function AddTransactionModal({ options, type = "income" }) {
                 >
                   Date
                 </Typography>
-                  <DatePicker 
-                    selected={date} 
-                    onChange={(date) => setDate(date)} 
-                    className="w-full p-2 border border-gray-400 rounded-md focus:ring-2"
-                    wrapperClassName="w-full"
-                  />
+                <DatePicker
+                  selected={date}
+                  onChange={(date) => setDate(date)}
+                  className="w-full p-2 border border-gray-400 rounded-md focus:ring-2"
+                  wrapperClassName="w-full"
+                />
               </div>
             </div>
             <div>
@@ -184,12 +223,13 @@ export default function AddTransactionModal({ options, type = "income" }) {
                 labelProps={{
                   className: "hidden",
                 }}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </DialogBody>
 
           <DialogFooter>
-            <Button className="ml-auto" type="submit">
+            <Button className="ml-auto" type="submit" disabled={loading}>
               {type === "income" ? "Add Income" : "Add Expense"}
             </Button>
           </DialogFooter>
