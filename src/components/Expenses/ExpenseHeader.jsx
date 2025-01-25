@@ -1,20 +1,27 @@
-import { Button, Select, Option } from "@material-tailwind/react";
-import { Plus, Search } from "lucide-react";
+import React from "react";
+import { Select, Option } from "@material-tailwind/react";
+import { Search } from "lucide-react";
+import { AddTransactionModal } from "../index";
 
 export default function ExpenseHeader() {
+  const options = [
+    "Food & Dining",
+    "Transportation",
+    "Shopping",
+    "Utilities",
+    "Entertainment",
+  ]
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
       <div className="flex gap-4">
-        <Button className="flex items-center gap-2 bg-blue-500" size="sm">
-          <Plus className="h-4 w-4" /> Add Expense
-        </Button>
+        <AddTransactionModal options={options} type='expense'/>
         <Select label="All Categories" size="md">
-          <Option value="all">All Categories</Option>
-          <Option value="food">Food & Dining</Option>
-          <Option value="transportation">Transportation</Option>
-          <Option value="shopping">Shopping</Option>
-          <Option value="utilities">Utilities</Option>
-          <Option value="entertainment">Entertainment</Option>
+          <Option key="all" value="all">All Categories</Option>
+          {options.map((option) => (
+            <Option key={option} value={option}>
+              {option}
+            </Option>
+          ))}
         </Select>
       </div>
 

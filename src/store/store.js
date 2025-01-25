@@ -8,7 +8,7 @@ const store = configureStore({
     reducer: {
         auth: authReducer,
         income: incomesReducer,
-        expenses: expensesReducer,
+        expense: expensesReducer,
         error: errorReducer,
     }
 });

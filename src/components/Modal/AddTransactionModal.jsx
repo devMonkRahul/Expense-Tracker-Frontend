@@ -65,6 +65,22 @@ export default function AddTransactionModal({ options, type = "income" }) {
           if (response.success) {
             dispatch(addIncome({incomes: response.data}));
           }
+        } else {
+          const response = await postRequest(
+            "/api/v1/transaction/addExpense",
+            {
+              title,
+              category,
+              amount,
+              date: formatDate(date),
+              description,  
+            },
+            token
+          );
+
+          if (response.success) {
+            dispatch(addExpense({expenses: response.data}));
+          }
         }
         handleOpen();
       } catch (error) {
@@ -228,7 +244,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
 
           <DialogFooter>
             <Button className="ml-auto" type="submit" disabled={isLoading}>
-              {type === "income" ? isLoading ? "Adding Income..." : "Add Income" : isLoading ? "Adding Expense..." : "Add Expense"}
+              {type === "income" ? (isLoading ? "Adding Income..." : "Add Income") : (isLoading ? "Adding Expense..." : "Add Expense")}
             </Button>
           </DialogFooter>
         </form>

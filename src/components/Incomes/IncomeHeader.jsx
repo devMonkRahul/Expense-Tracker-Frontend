@@ -16,12 +16,12 @@ export default function IncomeHeader() {
       <div className="flex gap-4">
         <AddTransactionModal options={options} type='income'/>
         <Select label="All Categories" size="lg">
-          <Option value="All">All Categories</Option>
-          <Option value="Salary">Salary</Option>
-          <Option value="Freelance">Freelance</Option>
-          <Option value="Business Income">Business Income</Option>
-          <Option value="Investment Income">Investment Income</Option>
-          <Option value="Rental Income">Rental Income</Option>
+          <Option key="all" value="all">All Categories</Option>
+          {options.map((option) => (
+            <Option key={option} value={option}>
+              {option}
+            </Option>
+          ))}
         </Select>
       </div>
 

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     expenses: [],
-    loading: true,
+    isLoading: true,
 };
 
 const expenseSlice = createSlice({
@@ -10,14 +10,13 @@ const expenseSlice = createSlice({
     initialState,
     reducers: {
         setExpenses: (state, action) => {
-            state.expenses = action.payload;
-            state.loading = false;
+            state.expenses = action.payload.expenses;
         },
         setLoading: (state, action) => {
-            state.loading = action.payload;
+            state.isLoading = action.payload.isLoading;
         },
         addExpense: (state, action) => {
-            state.expenses.push(action.payload);
+            state.expenses.push(action.payload.expenses);
         },
         deleteExpense: (state, action) => {
             state.expenses = state.expenses.filter((expense) => expense._id !== action.payload);
