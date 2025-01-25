@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
-export default function Chart({ data, categoryColors }) {
+export default function Chart({ data, categoryColors, type="income" }) {
   data = data.map((item) => ({
     name: item.category,
     value: item.amount,
@@ -12,7 +12,7 @@ export default function Chart({ data, categoryColors }) {
     <Card>
       <CardBody>
         <Typography variant="h5" color="blue-gray">
-          Expense by Category
+          {type === "income" ? "Incomes" : "Expenses"} by Category
         </Typography>
         <div className="h-[380px] w-full flex justify-between items-center">
           <ResponsiveContainer width="100%" height="100%">

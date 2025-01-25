@@ -12,8 +12,8 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { Plus, X } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { addIncome } from "../../store/features/incomeSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addIncome, setLoading } from "../../store/features/incomeSlice";
 import { addExpense } from "../../store/features/expenseSlice";
 import { usePost } from "../../hooks/useHttp";
 import { setError } from "../../store/features/errorSlice";
@@ -21,7 +21,6 @@ import { logout } from "../../store/features/authSlice";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { use } from "react";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -30,7 +29,7 @@ const formatDate = (dateString) => {
 
 export default function AddTransactionModal({ options, type = "income" }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const isLoading = useSelector((state) => state.income.isLoading);
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("accessToken");
   const navigate = useNavigate();
@@ -48,7 +47,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
     e.preventDefault();
 
     if (token) {
-      setLoading(true);
+      dispatch(setLoading({ isLoading: true }));
       try {
         if (type === "income") {
           const response = await postRequest(
@@ -64,9 +63,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
           );
 
           if (response.success) {
-            console.log(response.data);
-            dispatch(addIncome(response.data));
-            navigate('/dashboard/incomes');
+            dispatch(addIncome({incomes: response.data}));
           }
         }
         handleOpen();
@@ -78,7 +75,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
         );
         console.error(error);
       } finally {
-        setLoading(false);
+        dispatch(setLoading({ isLoading: false }));
       }
     } else {
       dispatch(logout());
@@ -229,7 +226,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
           </DialogBody>
 
           <DialogFooter>
-            <Button className="ml-auto" type="submit" disabled={loading}>
+            <Button className="ml-auto" type="submit" disabled={isLoading}>
               {type === "income" ? "Add Income" : "Add Expense"}
             </Button>
           </DialogFooter>

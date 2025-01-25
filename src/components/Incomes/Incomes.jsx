@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setIncomes } from "../../store/features/incomeSlice";
+import { setIncomes, setLoading } from "../../store/features/incomeSlice";
 import { setError } from "../../store/features/errorSlice";
 import { logout } from "../../store/features/authSlice";
 import IncomeHeader from "./IncomeHeader";
@@ -29,15 +29,15 @@ const pieChartColors = {
 export default function Incomes() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [incomes, setIncome] = useState([]);
+  const isLoading = useSelector((state) => state.income.isLoading);
+  const incomes = useSelector((state) => state.income.incomes);
 
   const token = sessionStorage.getItem("accessToken");
   const { getRequest } = useGet();
 
   useEffect(() => {
     if (token) {
-      setIsLoading(true);
+      dispatch(setLoading({ isLoading: true }));
       const getIncomes = async () => {
         try {
           const response = await getRequest(
@@ -45,8 +45,7 @@ export default function Incomes() {
             token
           );
           if (response.success) {
-            dispatch(setIncomes(response.data));
-            setIncome(response.data);
+            dispatch(setIncomes({incomes: response.data}));
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));
@@ -54,15 +53,15 @@ export default function Incomes() {
           console.error(error);
           navigate("/");
         } finally {
-          setIsLoading(false);
+          dispatch(setLoading({ isLoading: false }));
         }
       };
       getIncomes();
     } else {
-      dispatch(setIncomes([]));
+      dispatch(logout());
       navigate("/");
     }
-  }, []);
+  }, [navigate, dispatch, token]);
 
   const data = incomes.reduce((acc, curr) => {
     const existing = acc.find((item) => item.category === curr.category);
@@ -73,7 +72,6 @@ export default function Incomes() {
     }
     return acc;
   }, [])
- 
 
   return (
     <div className="bg-gray-50/50 p-8 w-full">
@@ -82,7 +80,7 @@ export default function Incomes() {
         <>
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
             <div className="w-full lg:w-2/3">
-              <Chart data={data} categoryColors={pieChartColors}/>
+              <Chart data={data} categoryColors={pieChartColors} type="income"/>
             </div>
             <div className="w-full lg:w-1/3">
               <CategoryBreakdown categories={data} categoryColors={categoryColors} />

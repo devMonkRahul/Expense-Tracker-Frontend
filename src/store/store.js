@@ -7,7 +7,7 @@ import errorReducer from "./features/errorSlice"
 const store = configureStore({
     reducer: {
         auth: authReducer,
-        incomes: incomesReducer,
+        income: incomesReducer,
         expenses: expensesReducer,
         error: errorReducer,
     }
