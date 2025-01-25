@@ -45,7 +45,8 @@ export default function Incomes() {
             token
           );
           if (response.success) {
-            dispatch(setIncomes({incomes: response.data}));
+            if (Object.keys(response.data).length !== 0)
+              dispatch(setIncomes({incomes: response.data}));
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));
@@ -102,6 +103,11 @@ export default function Incomes() {
             width={500} 
           />
         </>
+      )}
+      {!isLoading && incomes.length === 0 && (
+        <div className="flex items-center justify-center h-96">
+          <h1 className="text-2xl text-gray-500">No incomes found</h1>
+        </div>
       )}
     </div>
   );

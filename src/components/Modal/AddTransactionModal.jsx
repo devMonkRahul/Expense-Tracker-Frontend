@@ -29,7 +29,7 @@ const formatDate = (dateString) => {
 
 export default function AddTransactionModal({ options, type = "income" }) {
   const [open, setOpen] = useState(false);
-  const isLoading = useSelector((state) => state.income.isLoading);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("accessToken");
   const navigate = useNavigate();
@@ -47,8 +47,8 @@ export default function AddTransactionModal({ options, type = "income" }) {
     e.preventDefault();
 
     if (token) {
-      dispatch(setLoading({ isLoading: true }));
       try {
+        setIsLoading(true);
         if (type === "income") {
           const response = await postRequest(
             "/api/v1/transaction/addIncome",
@@ -74,8 +74,9 @@ export default function AddTransactionModal({ options, type = "income" }) {
           )
         );
         console.error(error);
-      } finally {
-        dispatch(setLoading({ isLoading: false }));
+      } 
+      finally {
+        setIsLoading(false);
       }
     } else {
       dispatch(logout());
@@ -227,7 +228,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
 
           <DialogFooter>
             <Button className="ml-auto" type="submit" disabled={isLoading}>
-              {type === "income" ? "Add Income" : "Add Expense"}
+              {type === "income" ? isLoading ? "Adding Income..." : "Add Income" : isLoading ? "Adding Expense..." : "Add Expense"}
             </Button>
           </DialogFooter>
         </form>
