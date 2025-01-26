@@ -10,6 +10,7 @@ import CategoryBreakdown from "./CategoryBreakdown/CategoryBreakdown";
 import TransactionTable from "./TransactionTable/TransactionTable";
 import Incomes from "./Incomes/Incomes";
 import AddTransactionModal from "./Modal/AddTransactionModal";
+import EditTransactionModal from "./Modal/EditTransactionModal";
 
 export {
   StickyNavbar,
@@ -25,4 +26,5 @@ export {
   TransactionTable,
   Incomes,
   AddTransactionModal,
+  EditTransactionModal,
 };
