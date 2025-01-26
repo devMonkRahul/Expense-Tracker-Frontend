@@ -91,6 +91,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
       } 
     } else {
       dispatch(logout());
+      dispatch(setError("Session expired. Please login again."));
       navigate("/");
     }
   };

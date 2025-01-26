@@ -15,20 +15,33 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { usePatch } from "../../hooks/useHttp";
+import { useDispatch } from "react-redux";
+import { setError } from "../../store/features/errorSlice";
+import { logout } from "../../store/features/authSlice";
+import { useNavigate } from "react-router-dom";
+import { updateIncome } from "../../store/features/incomeSlice";
+import { updateExpense } from "../../store/features/expenseSlice";
+
 export default function EditTransactionModal({
   type = "income",
   options,
   transaction,
 }) {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = useState(new Date());
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const { patchRequest, isLoading } = usePatch();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(!open);
+
+  const token = sessionStorage.getItem("accessToken");
 
   useEffect(() => {
     setTitle(transaction.title);
@@ -40,6 +53,48 @@ export default function EditTransactionModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (token) {
+      try {
+        const body = {}
+        if (title !== transaction.title) body.title = title;
+        if (category !== transaction.category) body.category = category;
+        if (amount !== transaction.amount) body.amount = amount;
+        if (date !== transaction.date) body.date = date;
+        if (description !== transaction.description) body.description = description;
+
+        if (type === "income") {
+          const response = await patchRequest(
+            `/api/v1/transaction/editIncome/${transaction._id}`,
+            body,
+            token
+          );
+
+          if (response.success) {
+            dispatch(updateIncome({ id: transaction._id, updatedIncome: response.data }));
+          } 
+        } else {
+          const response = await patchRequest(
+            `/api/v1/transaction/editExpense/${transaction._id}`,
+            body,
+            token
+          );
+
+          if (response.success) {
+            dispatch(updateExpense({ id: transaction._id, updatedExpense: response.data }));
+          }
+        }
+
+        handleOpen();
+      } catch (error) {
+        dispatch(setError(error.message || "An error occurred"));
+        console.error(error);
+      }
+    } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login again."));
+      navigate("/");
+    }
   };
   return (
     <>
