@@ -1,39 +1,27 @@
-import React, { useEffect, useState } from "react";
 import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  IconButton,
   Input,
   Option,
   Select,
-  Button,
-  Dialog,
-  IconButton,
   Typography,
-  DialogBody,
-  DialogHeader,
-  DialogFooter,
 } from "@material-tailwind/react";
-import { Plus, X } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { addIncome } from "../../store/features/incomeSlice";
-import { addExpense } from "../../store/features/expenseSlice";
-import { usePost } from "../../hooks/useHttp";
-import { setError } from "../../store/features/errorSlice";
-import { logout } from "../../store/features/authSlice";
-import { useNavigate } from "react-router-dom";
+import { PencilLine, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toISOString().split("T")[0];
-};
-
-export default function AddTransactionModal({ options, type = "income" }) {
+export default function EditTransactionModal({
+  type = "income",
+  options,
+  transaction,
+}) {
   const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-  const token = sessionStorage.getItem("accessToken");
-  const navigate = useNavigate();
-  const { postRequest, isLoading } = usePost();
-
+  const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = useState(new Date());
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -42,75 +30,29 @@ export default function AddTransactionModal({ options, type = "income" }) {
 
   const handleOpen = () => setOpen(!open);
 
+  useEffect(() => {
+    setTitle(transaction.title);
+    setCategory(transaction.category);
+    setAmount(transaction.amount);
+    setDescription(transaction.description);
+    setDate(new Date(transaction.date));
+  }, [open, transaction]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (token) {
-      try {
-        if (type === "income") {
-          const response = await postRequest(
-            "/api/v1/transaction/addIncome",
-            {
-              title,
-              category,
-              amount,
-              date: formatDate(date),
-              description,  
-            },
-            token
-          );
-
-          if (response.success) {
-            dispatch(addIncome({incomes: response.data}));
-          }
-        } else {
-          const response = await postRequest(
-            "/api/v1/transaction/addExpense",
-            {
-              title,
-              category,
-              amount,
-              date: formatDate(date),
-              description,  
-            },
-            token
-          );
-
-          if (response.success) {
-            dispatch(addExpense({expenses: response.data}));
-          }
-        }
-        handleOpen();
-      } catch (error) {
-        dispatch(
-          setError(
-            error.message || "An error occurred while adding transaction"
-          )
-        );
-        console.error(error);
-      } 
-    } else {
-      dispatch(logout());
-      navigate("/");
-    }
   };
-
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        className="flex items-center gap-2 bg-blue-500 h-12 hover:bg-blue-700"
-      >
-        <Plus size={30} strokeWidth={5} />{" "}
-        {type === "income" ? "Add Income" : "Add Expense"}
-      </Button>
+      <IconButton variant="text" color="blue" onClick={handleOpen}>
+        <PencilLine size={24} strokeWidth={2.5} />
+      </IconButton>
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            {type === "income" ? "Add Income" : "Add Expense"}
+            {type === "income" ? "Edit Income" : "Edit Expense"}
           </Typography>
           <Typography className="mt-1 font-normal text-gray-600">
-            Add a new {type === "income" ? "income" : "expense"} to your list.
+            Edit {type === "income" ? "income" : "expense"} of your list.
           </Typography>
           <IconButton
             size="sm"
@@ -145,6 +87,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                   className: "hidden",
                 }}
                 onChange={(e) => setTitle(e.target.value)}
+                value={title}
               />
             </div>
             <div>
@@ -161,6 +104,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                   className: "hidden",
                 }}
                 onChange={(value) => setCategory(value)}
+                value={category}
               >
                 {options.map((option) => (
                   <Option key={option} value={option}>
@@ -193,6 +137,7 @@ export default function AddTransactionModal({ options, type = "income" }) {
                     className: "before:content-none after:content-none",
                   }}
                   onChange={(e) => setAmount(e.target.value)}
+                  value={amount}
                 />
               </div>
               <div className="w-full sm:w-1/2">
@@ -233,13 +178,20 @@ export default function AddTransactionModal({ options, type = "income" }) {
                   className: "hidden",
                 }}
                 onChange={(e) => setDescription(e.target.value)}
+                value={description}
               />
             </div>
           </DialogBody>
 
           <DialogFooter>
             <Button className="ml-auto" type="submit" disabled={isLoading}>
-              {type === "income" ? (isLoading ? "Adding Income..." : "Add Income") : (isLoading ? "Adding Expense..." : "Add Expense")}
+              {type === "income"
+                ? isLoading
+                  ? "Updating Income..."
+                  : "Update Income"
+                : isLoading
+                ? "Updating Expense..."
+                : "Update Expense"}
             </Button>
           </DialogFooter>
         </form>
