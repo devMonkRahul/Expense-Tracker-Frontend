@@ -91,6 +91,7 @@ export default function Expenses() {
               <CategoryBreakdown
                 categories={data}
                 categoryColors={categoryColors}
+                type="expense"
               />
             </div>
           </div>
