@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setIncomes, setLoading } from "../../store/features/incomeSlice";
@@ -19,12 +19,12 @@ const categoryColors = {
 };
 
 const pieChartColors = {
-  Salary : "#4287f5",
-  Freelance : "#42f5a7",
-  "Business Income" : "#a742f5",
-  "Investment Income" : "#f5d742",
-  "Rental Income" : "#f54242",
-}
+  Salary: "#4287f5",
+  Freelance: "#42f5a7",
+  "Business Income": "#a742f5",
+  "Investment Income": "#f5d742",
+  "Rental Income": "#f54242",
+};
 
 export default function Incomes() {
   const dispatch = useDispatch();
@@ -34,6 +34,16 @@ export default function Incomes() {
 
   const token = sessionStorage.getItem("accessToken");
   const { getRequest } = useGet();
+
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedTitle, setSelectedTitle] = useState("");
+
+  const filteredIncomes =
+    selectedCategory === "All Categories"
+      ? incomes
+      : incomes.filter((income) => income.category === selectedCategory);
+
+  const filteredIncomesByTitleAndCategory = selectedTitle === "" ? filteredIncomes : filteredIncomes.filter((income) => income.title.toLowerCase().includes(selectedTitle.toLowerCase()));
 
   useEffect(() => {
     if (token) {
@@ -46,7 +56,7 @@ export default function Incomes() {
           );
           if (response.success) {
             if (Object.keys(response.data).length !== 0)
-              dispatch(setIncomes({incomes: response.data}));
+              dispatch(setIncomes({ incomes: response.data }));
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));
@@ -69,38 +79,57 @@ export default function Incomes() {
     if (existing) {
       existing.amount += curr.amount;
     } else {
-      acc.push({...curr});
+      acc.push({ ...curr });
     }
     return acc;
-  }, [])
+  }, []);
 
   return (
     <div className="bg-gray-50/50 p-8 w-full">
-      <IncomeHeader />
       {!isLoading && incomes.length !== 0 && (
         <>
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
             <div className="w-full lg:w-2/3">
-              <Chart data={data} categoryColors={pieChartColors} type="income"/>
+              <Chart
+                data={data}
+                categoryColors={pieChartColors}
+                type="income"
+              />
             </div>
             <div className="w-full lg:w-1/3">
-              <CategoryBreakdown categories={data} categoryColors={categoryColors} />
+              <CategoryBreakdown
+                categories={data}
+                categoryColors={categoryColors}
+                type="income"
+              />
             </div>
           </div>
+        </>
+      )}
+      <IncomeHeader setSelectedCategory={setSelectedCategory} setSelectedTitle={setSelectedTitle}/>
+      {!isLoading && incomes.length !== 0 && filteredIncomesByTitleAndCategory.length !== 0 && (
+        <>
           <TransactionTable
-            transactions={incomes}
+            transactions={[...filteredIncomesByTitleAndCategory].reverse()}
             type="income"
             categoryColors={categoryColors}
           />
         </>
       )}
+      {!isLoading && incomes.length !== 0 && filteredIncomesByTitleAndCategory.length === 0 && (
+        <div className="flex items-center justify-center h-96">
+          <h1 className="text-2xl text-gray-500">
+            No incomes found for this Category or Title
+          </h1>
+        </div>
+      )}
       {isLoading && (
         <>
-          <Lottie 
+          <Lottie
             animationData={animationData}
             loop={true}
-            height={500} 
-            width={500} 
+            height={500}
+            width={500}
           />
         </>
       )}

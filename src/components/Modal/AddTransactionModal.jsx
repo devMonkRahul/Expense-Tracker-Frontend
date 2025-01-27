@@ -100,9 +100,9 @@ export default function AddTransactionModal({ options, type = "income" }) {
     <>
       <Button
         onClick={handleOpen}
-        className="flex items-center gap-2 bg-blue-500 h-12 hover:bg-blue-700"
+        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 w-full"
       >
-        <Plus size={30} strokeWidth={5} />{" "}
+        <Plus size={18} strokeWidth={5} />{" "}
         {type === "income" ? "Add Income" : "Add Expense"}
       </Button>
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">

@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { Modal } from "../index";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../store/features/authSlice";
+import { setIncomes } from "../../store/features/incomeSlice";
+import { setExpenses } from "../../store/features/expenseSlice";
 import { Power, Menu } from "lucide-react";
 import { SidebarContent } from "../index";
  
@@ -28,6 +30,8 @@ export function StickyNavbar() {
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(setIncomes({ incomes: [] }));
+    dispatch(setExpenses({ expenses: [] }));
     sessionStorage.clear();
     navigate("/");
   }
