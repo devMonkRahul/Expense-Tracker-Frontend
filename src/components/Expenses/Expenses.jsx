@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setExpenses, setLoading } from "../../store/features/expenseSlice";
@@ -34,6 +34,16 @@ export default function Expenses() {
 
   const token = sessionStorage.getItem("accessToken");
   const { getRequest } = useGet();
+
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedTitle, setSelectedTitle] = useState("");
+
+  const filteredExpenses =
+    selectedCategory === "All Categories"
+      ? expenses
+      : expenses.filter((expense) => expense.category === selectedCategory);
+
+  const filteredExpensesByTitleAndCategory = selectedTitle === "" ? filteredExpenses : filteredExpenses.filter((expense) => expense.title.toLowerCase().includes(selectedTitle.toLowerCase()));
 
   useEffect(() => {
     if (token) {
@@ -76,7 +86,6 @@ export default function Expenses() {
 
   return (
     <div className="bg-gray-50/50 p-8 w-full">
-      <ExpenseHeader />
       {!isLoading && expenses.length !== 0 && (
         <>
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
@@ -95,22 +104,34 @@ export default function Expenses() {
               />
             </div>
           </div>
+        </>
+      )}
+      <ExpenseHeader setSelectedCategory={setSelectedCategory} setSelectedTitle={setSelectedTitle}/>
+      {!isLoading && expenses.length !== 0 && filteredExpensesByTitleAndCategory.length !== 0 && (
+        <>
           <TransactionTable
-            transactions={expenses}
+            transactions={[...filteredExpensesByTitleAndCategory].reverse()}
             type="expense"
             categoryColors={categoryColors}
           />
         </>
       )}
+      {!isLoading && expenses.length !== 0 && filteredExpensesByTitleAndCategory.length === 0 && (
+        <div className="flex items-center justify-center h-96">
+          <h1 className="text-2xl text-gray-500">
+            No expenses found for this Category or Title
+          </h1>
+        </div>
+      )}
       {isLoading && (
-        <>
-          <Lottie 
+        <div className="flex items-center justify-center h-96">
+          <Lottie
             animationData={animationData}
             loop={true}
-            height={500} 
-            width={500} 
+            height={500}
+            width={500}
           />
-        </>
+        </div>
       )}
       {!isLoading && expenses.length === 0 && (
         <div className="flex items-center justify-center h-96">
