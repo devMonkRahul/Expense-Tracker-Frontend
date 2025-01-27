@@ -19,13 +19,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../store/features/authSlice";
 import { setIncomes } from "../../store/features/incomeSlice";
 import { setExpenses } from "../../store/features/expenseSlice";
-import { Power, Menu as MenuIcon, ChevronDown } from "lucide-react";
+import { Power, Menu as MenuIcon, ChevronDown, CircleUserRound, Settings, CirclePower } from "lucide-react";
 import { SidebarContent } from "../index";
-import {
-  UserCircleIcon,
-  Cog6ToothIcon,
-  PowerIcon,
-} from "@heroicons/react/24/solid";
+
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,7 +36,7 @@ function ProfileMenu() {
   const profileMenuItems = [
     {
       label: "My Profile",
-      icon: UserCircleIcon,
+      icon: <CircleUserRound />,
       onClick: () => {
         console.log("My Profile");
         closeMenu();
@@ -48,7 +44,7 @@ function ProfileMenu() {
     },
     {
       label: "Edit Profile",
-      icon: Cog6ToothIcon,
+      icon: <Settings />,
       onClick: () => {
         console.log("Edit Profile");
         closeMenu();
@@ -56,7 +52,7 @@ function ProfileMenu() {
     },
     {
       label: "Log Out",
-      icon: PowerIcon,
+      icon: <CirclePower size={20} color="#e44949" />,
       onClick: () => {
         closeMenu();
         dispatch(logout());
@@ -103,10 +99,7 @@ function ProfileMenu() {
                   : ""
               }`}
             >
-              {React.createElement(icon, {
-                className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
-              })}
+              {icon}
               <Typography
                 as="span"
                 variant="small"
