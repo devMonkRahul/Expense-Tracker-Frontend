@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     expenses: [],
-    isLoading: true,
+    isLoading: false,
 };
 
 const expenseSlice = createSlice({
