@@ -124,14 +124,14 @@ export default function Incomes() {
         </div>
       )}
       {isLoading && (
-        <>
+        <div className="flex items-center justify-center h-96">
           <Lottie
             animationData={animationData}
             loop={true}
             height={500}
             width={500}
           />
-        </>
+        </div>
       )}
       {!isLoading && incomes.length === 0 && (
         <div className="flex items-center justify-center h-96">
