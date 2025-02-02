@@ -61,17 +61,11 @@ export function SidebarContent() {
 }
 
 export default function Sidebar() {
-  // const [isOpen, setIsOpen] = useState(false);
-
-  // useEffect(() => {
-  //   window.addEventListener("resize", () => {
-  //     window.innerWidth >= 960 ? setIsOpen(true) : setIsOpen(false);
-  //   });
-  // }, []);
-
   return (
     <>
-      <Card className=" w-full max-w-[15rem] py-4 shadow-xl shadow-blue-gray-900/20 min-h-screen">
+      <Card 
+        className="fixed left-0 top-13 h-screen w-60 py-4 shadow-xl shadow-blue-gray-900/20"
+      >
         <SidebarContent />
       </Card>
     </>

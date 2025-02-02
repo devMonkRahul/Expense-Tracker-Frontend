@@ -41,12 +41,12 @@ export default function DashBoard() {
   }, []);
 
   return isOpen ? (
-    <>
-      <div className="flex">
-        <Sidebar />
+    <div className="flex">
+      <Sidebar />
+      <div className="ml-60 flex-1">
         <Outlet />
       </div>
-    </>
+    </div>
   ) : (
     <Outlet />
   );
