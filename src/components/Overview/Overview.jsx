@@ -25,7 +25,7 @@ import { setIncomes } from "../../store/features/incomeSlice";
 import { setError } from "../../store/features/errorSlice";
 import { setExpenses } from "../../store/features/expenseSlice";
 import Lottie from "lottie-react";
-import animationData from "../../assets/Lottie/loader.json";
+import animationData from "../../assets/Lottie/loader2.json";
 
 const chartData = [
   { month: "Jan", amount: 2500 },
@@ -232,12 +232,13 @@ export default function Overview() {
         </>
       )}
       {isLoading && (
-        <div className="flex items-center justify-center h-96">
+        <div 
+          className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb]"
+        >
           <Lottie
             animationData={animationData}
             loop={true}
-            height={500}
-            width={500}
+            style={{ width: "300px", height: "300px", backgroundColor: "#e5e7eb" }}
           />
         </div>
       )}

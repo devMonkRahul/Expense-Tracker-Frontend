@@ -36,14 +36,20 @@ export default function Incomes() {
   const { getRequest } = useGet();
 
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedText, setSelectedText] = useState("");
 
   const filteredIncomes =
     selectedCategory === "All Categories"
       ? incomes
       : incomes.filter((income) => income.category === selectedCategory);
 
-  const filteredIncomesByTitleAndCategory = selectedTitle === "" ? filteredIncomes : filteredIncomes.filter((income) => income.title.toLowerCase().includes(selectedTitle.toLowerCase()));
+  const filteredIncomesByTitleDescriptionAndCategory = 
+    selectedText === ""
+      ? filteredIncomes
+      : filteredIncomes.filter((income) =>
+          income.title.toLowerCase().includes(selectedText.toLowerCase()) || 
+          income.description.toLowerCase().includes(selectedText.toLowerCase())
+        );
 
   useEffect(() => {
     if (token) {
@@ -85,7 +91,7 @@ export default function Incomes() {
   }, []);
 
   return (
-    <div className="bg-gray-50/50 p-8 w-full">
+    <div className="bg-[#e5e7eb] p-8 w-full">
       {!isLoading && incomes.length !== 0 && (
         <>
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
@@ -106,30 +112,36 @@ export default function Incomes() {
           </div>
         </>
       )}
-      <IncomeHeader setSelectedCategory={setSelectedCategory} setSelectedTitle={setSelectedTitle}/>
-      {!isLoading && incomes.length !== 0 && filteredIncomesByTitleAndCategory.length !== 0 && (
-        <>
-          <TransactionTable
-            transactions={[...filteredIncomesByTitleAndCategory].reverse()}
-            type="income"
-            categoryColors={categoryColors}
-          />
-        </>
-      )}
-      {!isLoading && incomes.length !== 0 && filteredIncomesByTitleAndCategory.length === 0 && (
-        <div className="flex items-center justify-center h-96">
-          <h1 className="text-2xl text-gray-500">
-            No incomes found for this Category or Title
-          </h1>
-        </div>
-      )}
+      <IncomeHeader
+        setSelectedCategory={setSelectedCategory}
+        setSelectedText={setSelectedText}
+      />
+      {!isLoading &&
+        incomes.length !== 0 &&
+        filteredIncomesByTitleDescriptionAndCategory.length !== 0 && (
+          <>
+            <TransactionTable
+              transactions={[...filteredIncomesByTitleDescriptionAndCategory].reverse()}
+              type="income"
+              categoryColors={categoryColors}
+            />
+          </>
+        )}
+      {!isLoading &&
+        incomes.length !== 0 &&
+        filteredIncomesByTitleDescriptionAndCategory.length === 0 && (
+          <div className="flex items-center justify-center h-96">
+            <h1 className="text-2xl text-gray-500">
+              No incomes found for this Category or Title
+            </h1>
+          </div>
+        )}
       {isLoading && (
-        <div className="flex items-center justify-center h-96">
+        <div className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb]">
           <Lottie
             animationData={animationData}
             loop={true}
-            height={500}
-            width={500}
+            style={{ width: 200, height: 200 }}
           />
         </div>
       )}
