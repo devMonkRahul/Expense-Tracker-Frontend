@@ -91,7 +91,7 @@ export default function Incomes() {
   }, []);
 
   return (
-    <div className="bg-[#e5e7eb] p-8 w-full">
+    <div className="bg-[#e5e7eb] p-4 w-full">
       {!isLoading && incomes.length !== 0 && (
         <>
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
@@ -146,7 +146,7 @@ export default function Incomes() {
         </div>
       )}
       {!isLoading && incomes.length === 0 && (
-        <div className="flex items-center justify-center h-96">
+        <div className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb] -z-50">
           <h1 className="text-2xl text-gray-500">No incomes found</h1>
         </div>
       )}
