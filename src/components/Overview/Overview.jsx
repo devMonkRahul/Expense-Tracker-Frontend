@@ -233,7 +233,7 @@ export default function Overview() {
       )}
       {isLoading && (
         <div 
-          className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb]"
+          className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]"
         >
           <Lottie
             animationData={animationData}

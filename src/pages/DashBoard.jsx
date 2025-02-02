@@ -43,7 +43,7 @@ export default function DashBoard() {
   return isOpen ? (
     <div className="flex">
       <Sidebar />
-      <div className="ml-60 flex-1">
+      <div className="ml-60 flex-1 relative h-[calc(100vh-4rem)]">
         <Outlet />
       </div>
     </div>

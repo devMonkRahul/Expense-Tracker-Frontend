@@ -138,7 +138,7 @@ export default function Expenses() {
           </div>
         )}
       {isLoading && (
-        <div className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb]">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]">
           <Lottie
             animationData={animationData}
             loop={true}
@@ -147,8 +147,8 @@ export default function Expenses() {
         </div>
       )}
       {!isLoading && expenses.length === 0 && (
-        <div className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb] -z-50">
-          <h1 className="text-2xl text-gray-500">No expenses found</h1>
+        <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb] -z-50">
+          <h1 className="text-2xl text-gray-600">No expenses found</h1>
         </div>
       )}
     </div>

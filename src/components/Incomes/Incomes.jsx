@@ -43,12 +43,15 @@ export default function Incomes() {
       ? incomes
       : incomes.filter((income) => income.category === selectedCategory);
 
-  const filteredIncomesByTitleDescriptionAndCategory = 
+  const filteredIncomesByTitleDescriptionAndCategory =
     selectedText === ""
       ? filteredIncomes
-      : filteredIncomes.filter((income) =>
-          income.title.toLowerCase().includes(selectedText.toLowerCase()) || 
-          income.description.toLowerCase().includes(selectedText.toLowerCase())
+      : filteredIncomes.filter(
+          (income) =>
+            income.title.toLowerCase().includes(selectedText.toLowerCase()) ||
+            income.description
+              .toLowerCase()
+              .includes(selectedText.toLowerCase())
         );
 
   useEffect(() => {
@@ -91,53 +94,57 @@ export default function Incomes() {
   }, []);
 
   return (
-    <div className="bg-[#e5e7eb] p-4 w-full">
-      {!isLoading && incomes.length !== 0 && (
-        <>
-          <div className="flex flex-col lg:flex-row gap-6 mb-6">
-            <div className="w-full lg:w-2/3">
-              <Chart
-                data={data}
-                categoryColors={pieChartColors}
-                type="income"
-              />
-            </div>
-            <div className="w-full lg:w-1/3">
-              <CategoryBreakdown
-                categories={data}
-                categoryColors={categoryColors}
-                type="income"
-              />
-            </div>
-          </div>
-        </>
-      )}
-      <IncomeHeader
-        setSelectedCategory={setSelectedCategory}
-        setSelectedText={setSelectedText}
-      />
-      {!isLoading &&
-        incomes.length !== 0 &&
-        filteredIncomesByTitleDescriptionAndCategory.length !== 0 && (
+    <>
+      <div className="bg-[#e5e7eb] p-4 w-full">
+        {!isLoading && incomes.length !== 0 && (
           <>
-            <TransactionTable
-              transactions={[...filteredIncomesByTitleDescriptionAndCategory].reverse()}
-              type="income"
-              categoryColors={categoryColors}
-            />
+            <div className="flex flex-col lg:flex-row gap-6 mb-6">
+              <div className="w-full lg:w-2/3">
+                <Chart
+                  data={data}
+                  categoryColors={pieChartColors}
+                  type="income"
+                />
+              </div>
+              <div className="w-full lg:w-1/3">
+                <CategoryBreakdown
+                  categories={data}
+                  categoryColors={categoryColors}
+                  type="income"
+                />
+              </div>
+            </div>
           </>
         )}
-      {!isLoading &&
-        incomes.length !== 0 &&
-        filteredIncomesByTitleDescriptionAndCategory.length === 0 && (
-          <div className="flex items-center justify-center h-96">
-            <h1 className="text-2xl text-gray-500">
-              No incomes found for this Category or Title
-            </h1>
-          </div>
-        )}
+        <IncomeHeader
+          setSelectedCategory={setSelectedCategory}
+          setSelectedText={setSelectedText}
+        />
+        {!isLoading &&
+          incomes.length !== 0 &&
+          filteredIncomesByTitleDescriptionAndCategory.length !== 0 && (
+            <>
+              <TransactionTable
+                transactions={[
+                  ...filteredIncomesByTitleDescriptionAndCategory,
+                ].reverse()}
+                type="income"
+                categoryColors={categoryColors}
+              />
+            </>
+          )}
+        {!isLoading &&
+          incomes.length !== 0 &&
+          filteredIncomesByTitleDescriptionAndCategory.length === 0 && (
+            <div className="flex items-center justify-center h-96">
+              <h1 className="text-2xl text-gray-500">
+                No incomes found for this Category or Title
+              </h1>
+            </div>
+          )}
+      </div>
       {isLoading && (
-        <div className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb]">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]">
           <Lottie
             animationData={animationData}
             loop={true}
@@ -146,10 +153,10 @@ export default function Incomes() {
         </div>
       )}
       {!isLoading && incomes.length === 0 && (
-        <div className="absolute ml-60 inset-0 flex items-center justify-center bg-[#e5e7eb] -z-50">
-          <h1 className="text-2xl text-gray-500">No incomes found</h1>
+        <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb] -z-50">
+          <h1 className="text-2xl text-gray-600">No incomes found</h1>
         </div>
       )}
-    </div>
+    </>
   );
 }
