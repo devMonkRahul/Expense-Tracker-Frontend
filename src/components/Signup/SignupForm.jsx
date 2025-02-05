@@ -11,39 +11,33 @@ import {
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setError, clearError } from "../../store/features/errorSlice";
+import { setError } from "../../store/features/errorSlice";
 import { login } from "../../store/features/authSlice";
 import { usePost } from "../../hooks/useHttp";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import firebaseApp from "../../utils/firebase";
 
 export default function SignupForm() {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
 
-  const { postRequest } = usePost();
+  const { postRequest, isLoading } = usePost();
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const auth = getAuth(firebaseApp);
+
+  const handleApiCall = async (userData) => {
     try {
-      dispatch(clearError());
-      if (password !== confirmPassword) {
-        dispatch(setError("Password and Confirm Password do not match"));
-      }
-      const response = await postRequest("/api/v1/user/register", {
-        email,
-        username,
-        password,
-        confirmPassword,
-        fullName,
-      })
+      const response = await postRequest("/api/v1/user/register", userData);
 
       if (response.success) {
         dispatch(login());
@@ -52,15 +46,65 @@ export default function SignupForm() {
       }
     } catch (error) {
       dispatch(setError(error.message || "An error occurred while signing up"));
-    } finally {
-      setIsLoading(false);
     }
-  } 
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      dispatch(setError("Password and Confirm Password do not match"));
+    }
+    try {
+      const userData = {
+        email,
+        username,
+        password,
+        fullName,
+      };
+      await handleApiCall(userData);
+    } catch (error) {
+      dispatch(
+        setError(
+          error.message ||
+            "An error occurred while signing up with Email and Password"
+        )
+      );
+    }
+  };
+
+  const handleGoogleSignup = async (e) => {
+    e.preventDefault();
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+        if (!user) {
+          dispatch(
+            setError(
+              "An error occurred while signing up with Google. Please try again"
+            )
+          );
+          return;
+        }
+        const userData = {
+          email: user.email,
+          profileImage: user.photoURL,
+          fullName: user.displayName,
+          isGmailUser: true,
+        };
+        await handleApiCall(userData);
+    } catch (error) {
+      dispatch(
+        setError(
+          error.message || "An error occurred while signing up with Google"
+        )
+      );
+    }
+  };
 
   return (
     <>
-      <Card shadow={false} 
-      >
+      <Card shadow={false}>
         <CardHeader
           shadow={false}
           floated={false}
@@ -78,7 +122,10 @@ export default function SignupForm() {
           </Typography>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleSignup} className="flex flex-col gap-4 md:mt-12">
+          <form
+            onSubmit={handleSignup}
+            className="flex flex-col gap-4 md:mt-12"
+          >
             <div>
               <label htmlFor="fullName">
                 <Typography
@@ -203,7 +250,13 @@ export default function SignupForm() {
                 }}
               />
             </div>
-            <Button size="lg" color="gray" fullWidth type="submit" disabled={isLoading}>
+            <Button
+              size="lg"
+              color="gray"
+              fullWidth
+              type="submit"
+              disabled={isLoading}
+            >
               {isLoading ? "Signing up..." : "Sign Up"}
             </Button>
             <Button
@@ -211,6 +264,7 @@ export default function SignupForm() {
               size="lg"
               className="flex h-12 border-blue-gray-200 items-center justify-center gap-2"
               fullWidth
+              onClick={handleGoogleSignup}
             >
               <img
                 src={`https://www.material-tailwind.com/logos/logo-google.png`}
