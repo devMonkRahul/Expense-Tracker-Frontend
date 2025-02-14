@@ -92,10 +92,10 @@ export default function Overview() {
   const currentYear = new Date().getFullYear();
   const currentWeek = getCurrentWeekNumber();
 
-  const getMonthlyData = async () => {
+  const getMonthlyData = async (month = currentMonth, year = currentYear) => {
     try {
       const incomeResponse = await getRequest(
-        `/api/v1/transaction/getIncomes?year=${currentYear}&month=${currentMonth}`,
+        `/api/v1/transaction/getIncomes?year=${year}&month=${month}`,
         token
       );
 
@@ -115,16 +115,18 @@ export default function Overview() {
           dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
         }
       }
+
+      return { incomes: incomeResponse.data, expenses: expenseResponse.data };
     } catch (error) {
       dispatch(setError(error.message || "An error occurred while fetching monthly data"));
       console.error(error);
     }
   };
 
-  const getWeeklyData = async () => {
+  const getWeeklyData = async (year = currentYear, week = currentWeek) => {
     try {
       const incomeResponse = await getRequest(
-        `/api/v1/transaction/getIncomes?year=${currentYear}&week=${currentWeek}`,
+        `/api/v1/transaction/getIncomes?year=${year}&week=${week}`,
         token
       );
 
@@ -150,10 +152,10 @@ export default function Overview() {
     }
   };
 
-  const getYearlyData = async () => {
+  const getYearlyData = async (year = currentYear) => {
     try {
       const incomeResponse = await getRequest(
-        `/api/v1/transaction/getIncomes?year=${currentYear}`,
+        `/api/v1/transaction/getIncomes?year=${year}`,
         token
       );
 
@@ -198,7 +200,8 @@ export default function Overview() {
               await getWeeklyData();
               break;
             case "month":
-              await getMonthlyData();
+              const data = await getMonthlyData();
+              console.log(data);
               break;
             case "year":
               await getYearlyData();
