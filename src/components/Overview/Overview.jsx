@@ -42,6 +42,13 @@ const chartData = [
   { month: "Dec", amount: 3500 },
 ];
 
+function getCurrentWeekNumber() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const pastDays = (now - startOfYear) / 86400000; // Convert milliseconds to days
+  return Math.ceil((pastDays + startOfYear.getDay() + 1) / 7);
+}
+
 const MetricCard = ({ title, value, change, icon, changeColor }) => (
   <Card>
     <CardBody className="p-4">
@@ -80,6 +87,97 @@ export default function Overview() {
   const incomes = useSelector((state) => state.income.incomes);
   const expenses = useSelector((state) => state.expense.expenses);
   const userData = useSelector((state) => state.auth.userData);
+  const [chartViewType, setChartViewType] = useState("month");
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  const currentWeek = getCurrentWeekNumber();
+
+  const getMonthlyData = async () => {
+    try {
+      const incomeResponse = await getRequest(
+        `/api/v1/transaction/getIncomes?year=${currentYear}&month=${currentMonth}`,
+        token
+      );
+
+      if (incomeResponse.success) {
+        if (Object.keys(incomeResponse.data).length !== 0) {
+          dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
+        }
+      }
+
+      const expenseResponse = await getRequest(
+        `/api/v1/transaction/getExpenses?year=${currentYear}&month=${currentMonth}`,
+        token
+      );
+
+      if (expenseResponse.success) {
+        if (Object.keys(expenseResponse.data).length !== 0) {
+          dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
+        }
+      }
+    } catch (error) {
+      dispatch(setError(error.message || "An error occurred while fetching monthly data"));
+      console.error(error);
+    }
+  };
+
+  const getWeeklyData = async () => {
+    try {
+      const incomeResponse = await getRequest(
+        `/api/v1/transaction/getIncomes?year=${currentYear}&week=${currentWeek}`,
+        token
+      );
+
+      if (incomeResponse.success) {
+        if (Object.keys(incomeResponse.data).length !== 0) {
+          dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
+        }
+      }
+
+      const expenseResponse = await getRequest(
+        `/api/v1/transaction/getExpenses?year=${currentYear}&week=${currentWeek}`,
+        token
+      );
+
+      if (expenseResponse.success) {
+        if (Object.keys(expenseResponse.data).length !== 0) {
+          dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
+        }
+      }
+    } catch (error) {
+      dispatch(setError(error.message || "An error occurred while fetching weekly data"));
+      console.error(error);
+    }
+  };
+
+  const getYearlyData = async () => {
+    try {
+      const incomeResponse = await getRequest(
+        `/api/v1/transaction/getIncomes?year=${currentYear}`,
+        token
+      );
+
+      if (incomeResponse.success) {
+        if (Object.keys(incomeResponse.data).length !== 0) {
+          dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
+        }
+      }
+
+      const expenseResponse = await getRequest(
+        `/api/v1/transaction/getExpenses?year=${currentYear}`,
+        token
+      );
+
+      if (expenseResponse.success) {
+        if (Object.keys(expenseResponse.data).length !== 0) {
+          dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
+        }
+      }
+    } catch (error) {
+      dispatch(setError(error.message || "An error occurred while fetching yearly data"));
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (token) {
@@ -95,27 +193,19 @@ export default function Overview() {
               })
             );
           }
-
-          const incomeResponse = await getRequest(
-            "/api/v1/transaction/getIncomes",
-            token
-          );
-
-          if (incomeResponse.success) {
-            if (Object.keys(incomeResponse.data).length !== 0) {
-              dispatch(setIncomes({ incomes: incomeResponse.data }));
-            }
-          }
-
-          const expenseResponse = await getRequest(
-            "/api/v1/transaction/getExpenses",
-            token
-          );
-
-          if (expenseResponse.success) {
-            if (Object.keys(expenseResponse.data).length !== 0) {
-              dispatch(setExpenses({ expenses: expenseResponse.data }));
-            }
+          switch (chartViewType) {
+            case "week":
+              await getWeeklyData();
+              break;
+            case "month":
+              await getMonthlyData();
+              break;
+            case "year":
+              await getYearlyData();
+              break;
+            default:
+              await getMonthlyData();
+              break;
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));
@@ -133,7 +223,7 @@ export default function Overview() {
       dispatch(setIncomes({ incomes: [] }));
       navigate("/");
     }
-  }, [token, navigate, dispatch]);
+  }, [token, navigate, dispatch, chartViewType]);
 
   const totalIncome = incomes.reduce((acc, income) => acc + income.amount, 0);
   const totalExpense = expenses.reduce(
@@ -199,13 +289,25 @@ export default function Overview() {
                   Expense Overview
                 </Typography>
                 <div className="flex gap-2">
-                  <Button variant="outlined" size="sm">
+                  <Button
+                    variant={chartViewType === "week" ? "filled" : "outlined"}
+                    size="sm"
+                    onClick={() => setChartViewType("week")}
+                  >
                     Week
                   </Button>
-                  <Button variant="filled" size="sm">
+                  <Button
+                    variant={chartViewType === "month" ? "filled" : "outlined"}
+                    size="sm"
+                    onClick={() => setChartViewType("month")}
+                  >
                     Month
                   </Button>
-                  <Button variant="outlined" size="sm">
+                  <Button
+                    variant={chartViewType === "year" ? "filled" : "outlined"}
+                    size="sm"
+                    onClick={() => setChartViewType("year")}
+                  >
                     Year
                   </Button>
                 </div>
@@ -232,13 +334,15 @@ export default function Overview() {
         </>
       )}
       {isLoading && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]"
-        >
+        <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]">
           <Lottie
             animationData={animationData}
             loop={true}
-            style={{ width: "300px", height: "300px", backgroundColor: "#e5e7eb" }}
+            style={{
+              width: "300px",
+              height: "300px",
+              backgroundColor: "#e5e7eb",
+            }}
           />
         </div>
       )}
