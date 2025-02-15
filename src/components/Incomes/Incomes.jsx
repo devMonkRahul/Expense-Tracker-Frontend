@@ -65,7 +65,7 @@ export default function Incomes() {
           );
           if (response.success) {
             if (Object.keys(response.data).length !== 0)
-              dispatch(setIncomes({ incomes: response.data }));
+              dispatch(setIncomes({ incomes: response.data.incomes }));
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));

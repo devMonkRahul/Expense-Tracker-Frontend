@@ -1,13 +1,4 @@
-import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { Card, CardBody, Typography } from "@material-tailwind/react";
 import {
   ChartPie,
   Landmark,
@@ -26,28 +17,7 @@ import { setError } from "../../store/features/errorSlice";
 import { setExpenses } from "../../store/features/expenseSlice";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader2.json";
-
-const chartData = [
-  { month: "Jan", amount: 2500 },
-  { month: "Feb", amount: 3200 },
-  { month: "Mar", amount: 2800 },
-  { month: "Apr", amount: 3500 },
-  { month: "May", amount: 2900 },
-  { month: "Jun", amount: 3100 },
-  { month: "Jul", amount: 3600 },
-  { month: "Aug", amount: 3300 },
-  { month: "Sep", amount: 3700 },
-  { month: "Oct", amount: 3400 },
-  { month: "Nov", amount: 3200 },
-  { month: "Dec", amount: 3500 },
-];
-
-function getCurrentWeekNumber() {
-  const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const pastDays = (now - startOfYear) / 86400000; // Convert milliseconds to days
-  return Math.ceil((pastDays + startOfYear.getDay() + 1) / 7);
-}
+import { OverViewChart } from "../index";
 
 const MetricCard = ({ title, value, change, icon, changeColor }) => (
   <Card>
@@ -84,102 +54,12 @@ export default function Overview() {
   const token = sessionStorage.getItem("accessToken");
   const { getRequest } = useGet();
   const [isLoading, setIsLoading] = useState(false);
+  const [budgetStatus, setBudgetStatus] = useState(0);
   const incomes = useSelector((state) => state.income.incomes);
   const expenses = useSelector((state) => state.expense.expenses);
   const userData = useSelector((state) => state.auth.userData);
-  const [chartViewType, setChartViewType] = useState("month");
   const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-  const currentWeek = getCurrentWeekNumber();
-
-  const getMonthlyData = async (month = currentMonth, year = currentYear) => {
-    try {
-      const incomeResponse = await getRequest(
-        `/api/v1/transaction/getIncomes?year=${year}&month=${month}`,
-        token
-      );
-
-      if (incomeResponse.success) {
-        if (Object.keys(incomeResponse.data).length !== 0) {
-          dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
-        }
-      }
-
-      const expenseResponse = await getRequest(
-        `/api/v1/transaction/getExpenses?year=${currentYear}&month=${currentMonth}`,
-        token
-      );
-
-      if (expenseResponse.success) {
-        if (Object.keys(expenseResponse.data).length !== 0) {
-          dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
-        }
-      }
-
-      return { incomes: incomeResponse.data, expenses: expenseResponse.data };
-    } catch (error) {
-      dispatch(setError(error.message || "An error occurred while fetching monthly data"));
-      console.error(error);
-    }
-  };
-
-  const getWeeklyData = async (year = currentYear, week = currentWeek) => {
-    try {
-      const incomeResponse = await getRequest(
-        `/api/v1/transaction/getIncomes?year=${year}&week=${week}`,
-        token
-      );
-
-      if (incomeResponse.success) {
-        if (Object.keys(incomeResponse.data).length !== 0) {
-          dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
-        }
-      }
-
-      const expenseResponse = await getRequest(
-        `/api/v1/transaction/getExpenses?year=${currentYear}&week=${currentWeek}`,
-        token
-      );
-
-      if (expenseResponse.success) {
-        if (Object.keys(expenseResponse.data).length !== 0) {
-          dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
-        }
-      }
-    } catch (error) {
-      dispatch(setError(error.message || "An error occurred while fetching weekly data"));
-      console.error(error);
-    }
-  };
-
-  const getYearlyData = async (year = currentYear) => {
-    try {
-      const incomeResponse = await getRequest(
-        `/api/v1/transaction/getIncomes?year=${year}`,
-        token
-      );
-
-      if (incomeResponse.success) {
-        if (Object.keys(incomeResponse.data).length !== 0) {
-          dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
-        }
-      }
-
-      const expenseResponse = await getRequest(
-        `/api/v1/transaction/getExpenses?year=${currentYear}`,
-        token
-      );
-
-      if (expenseResponse.success) {
-        if (Object.keys(expenseResponse.data).length !== 0) {
-          dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
-        }
-      }
-    } catch (error) {
-      dispatch(setError(error.message || "An error occurred while fetching yearly data"));
-      console.error(error);
-    }
-  };
+  const currentYear = new Date().getFullYear();  
 
   useEffect(() => {
     if (token) {
@@ -195,23 +75,33 @@ export default function Overview() {
               })
             );
           }
-          switch (chartViewType) {
-            case "week":
-              await getWeeklyData();
-              break;
-            case "month":
-              const data = await getMonthlyData();
-              console.log(data);
-              break;
-            case "year":
-              await getYearlyData();
-              break;
-            default:
-              await getMonthlyData();
-              break;
+          const incomeResponse = await getRequest(
+            `/api/v1/transaction/getIncomes?year=${currentYear}&month=${currentMonth}`,
+            token
+          );
+    
+          if (incomeResponse.success) {
+            if (Object.keys(incomeResponse.data).length !== 0) {
+              dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
+            } else {
+              dispatch(setIncomes({ incomes: [] }));
+            }
+          }
+    
+          const expenseResponse = await getRequest(
+            `/api/v1/transaction/getExpenses?year=${currentYear}&month=${currentMonth}`,
+            token
+          );
+    
+          if (expenseResponse.success) {
+            if (Object.keys(expenseResponse.data).length !== 0) {
+              dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
+            } else {
+              dispatch(setExpenses({ expenses: [] }));
+            }
           }
         } catch (error) {
-          dispatch(setError(error.message || "An error occurred"));
+          dispatch(setError(error.message || "An error occurred while fetching data"));
           dispatch(logout());
           console.error(error);
           navigate("/");
@@ -226,13 +116,23 @@ export default function Overview() {
       dispatch(setIncomes({ incomes: [] }));
       navigate("/");
     }
-  }, [token, navigate, dispatch, chartViewType]);
+  }, [token, navigate, dispatch]);
 
   const totalIncome = incomes.reduce((acc, income) => acc + income.amount, 0);
   const totalExpense = expenses.reduce(
     (acc, expense) => acc + expense.amount,
     0
   );
+
+  useEffect(() => {
+    if (totalExpense === 0) {
+      setBudgetStatus(0);
+    } else {
+      setBudgetStatus(
+        Math.round((totalExpense / userData?.totalBudget) * 100)
+      );
+    }
+  }, [expenses]);
 
   return (
     <div className="bg-[#e5e7eb] p-8 w-full">
@@ -247,7 +147,7 @@ export default function Overview() {
               changeColor="green"
             />
             <MetricCard
-              title="Monthly Spending"
+              title="Monthly Expense"
               value={`$ ${totalExpense}`}
               change="+12.5%"
               icon={<SquarePercent className="text-red-400" />}
@@ -273,67 +173,18 @@ export default function Overview() {
                   <ChartPie className="text-purple-400" />
                 </div>
                 <Typography variant="h3" color="blue-gray">
-                  75%
+                  {budgetStatus} %
                 </Typography>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
                   <div
                     className="bg-purple-600 h-2.5 rounded-full"
-                    style={{ width: "75%" }}
+                    style={{ width: `${budgetStatus}%` }}
                   ></div>
                 </div>
               </CardBody>
             </Card>
           </div>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center justify-between mb-4">
-                <Typography variant="h5" color="blue-gray">
-                  Expense Overview
-                </Typography>
-                <div className="flex gap-2">
-                  <Button
-                    variant={chartViewType === "week" ? "filled" : "outlined"}
-                    size="sm"
-                    onClick={() => setChartViewType("week")}
-                  >
-                    Week
-                  </Button>
-                  <Button
-                    variant={chartViewType === "month" ? "filled" : "outlined"}
-                    size="sm"
-                    onClick={() => setChartViewType("month")}
-                  >
-                    Month
-                  </Button>
-                  <Button
-                    variant={chartViewType === "year" ? "filled" : "outlined"}
-                    size="sm"
-                    onClick={() => setChartViewType("year")}
-                  >
-                    Year
-                  </Button>
-                </div>
-              </div>
-              <div className="h-[400px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="amount"
-                      stroke="#2196f3"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardBody>
-          </Card>
+          <OverViewChart />
         </>
       )}
       {isLoading && (

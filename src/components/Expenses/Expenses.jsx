@@ -61,7 +61,7 @@ export default function Expenses() {
           );
           if (response.success) {
             if (Object.keys(response.data).length !== 0)
-              dispatch(setExpenses({ expenses: response.data }));
+              dispatch(setExpenses({ expenses: response.data.expenses }));
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));
