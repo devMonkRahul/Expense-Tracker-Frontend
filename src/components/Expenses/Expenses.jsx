@@ -120,9 +120,7 @@ export default function Expenses() {
         filteredExpensesByTitleDescriptionAndCategory.length !== 0 && (
           <>
             <TransactionTable
-              transactions={[
-                ...filteredExpensesByTitleDescriptionAndCategory,
-              ].reverse()}
+              transactions={filteredExpensesByTitleDescriptionAndCategory}
               type="expense"
               categoryColors={categoryColors}
             />

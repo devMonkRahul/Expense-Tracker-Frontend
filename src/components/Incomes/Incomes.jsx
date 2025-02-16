@@ -125,9 +125,7 @@ export default function Incomes() {
           filteredIncomesByTitleDescriptionAndCategory.length !== 0 && (
             <>
               <TransactionTable
-                transactions={[
-                  ...filteredIncomesByTitleDescriptionAndCategory,
-                ].reverse()}
+                transactions={filteredIncomesByTitleDescriptionAndCategory}
                 type="income"
                 categoryColors={categoryColors}
               />

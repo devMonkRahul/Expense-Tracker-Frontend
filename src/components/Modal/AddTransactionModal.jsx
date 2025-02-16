@@ -24,7 +24,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return date.toISOString().split("T")[0];
+  return date.toISOString();
 };
 
 export default function AddTransactionModal({ options, type = "income" }) {
@@ -88,7 +88,13 @@ export default function AddTransactionModal({ options, type = "income" }) {
           )
         );
         console.error(error);
-      } 
+      } finally {
+        setDate(new Date());
+        setTitle("");
+        setCategory("");
+        setAmount("");
+        setDescription("");
+      }
     } else {
       dispatch(logout());
       dispatch(setError("Session expired. Please login again."));

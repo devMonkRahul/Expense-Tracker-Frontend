@@ -17,6 +17,7 @@ const incomesSlice = createSlice({
         },
         addIncome: (state, action) => {
             state.incomes.push(action.payload.incomes);
+            state.incomes = state.incomes.sort((a, b) => new Date(b.date) - new Date(a.date));
         },
         deleteIncome: (state, action) => {
             state.incomes = state.incomes.filter((income) => income._id !== action.payload);
