@@ -17,7 +17,7 @@ import { setError } from "../../store/features/errorSlice";
 import { setExpenses } from "../../store/features/expenseSlice";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader2.json";
-import { OverViewChart } from "../index";
+import { OverViewChart, OverviewTransactionTable } from "../index";
 
 const MetricCard = ({ title, value, change, icon, changeColor }) => (
   <Card>
@@ -185,6 +185,7 @@ export default function Overview() {
             </Card>
           </div>
           <OverViewChart />
+          <OverviewTransactionTable />
         </>
       )}
       {isLoading && (

@@ -12,6 +12,7 @@ import Incomes from "./Incomes/Incomes";
 import AddTransactionModal from "./Modal/AddTransactionModal";
 import EditTransactionModal from "./Modal/EditTransactionModal";
 import OverViewChart from "./Chart/OverViewChart";
+import OverviewTransactionTable from "./TransactionTable/OverviewTransactionTable";
 
 export {
   StickyNavbar,
@@ -29,4 +30,5 @@ export {
   AddTransactionModal,
   EditTransactionModal,
   OverViewChart,
+  OverviewTransactionTable,
 };
