@@ -166,7 +166,7 @@ export default function OverViewChart() {
       //   }
 
       const expenseResponse = await getRequest(
-        `/api/v1/transaction/getExpenses?year=${year}&month=${month}`,
+        `/api/v1/transaction/getExpenses?year=${year}`,
         token
       );
 
