@@ -45,3 +45,18 @@ export const expenseCategoryColors = {
   Entertainment: "red",
 };
 
+export const getTotalAmount = (transactions) => {
+  return transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
+}
+
+export const currentMonth = new Date().getMonth() + 1;
+export const currentYear = new Date().getFullYear();
+export const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+export const lastYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+
+export const calculatePercentageChange = (current, previous) => {
+  if (previous === 0) {
+      return current === 0 ? 0 : 100; // If both are 0, no change; otherwise, full increase
+  }
+  return ((current - previous) / previous) * 100;
+};

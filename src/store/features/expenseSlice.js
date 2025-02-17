@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
+    lastMonthExpenses: [],
     expenses: [],
     isLoading: false,
 };
@@ -10,7 +11,8 @@ const expenseSlice = createSlice({
     initialState,
     reducers: {
         setExpenses: (state, action) => {
-            state.expenses = action.payload.expenses;
+            state.expenses = action.payload.expenses || state.expenses;
+            state.lastMonthExpenses = action.payload.lastMonthExpenses || state.lastMonthExpenses;
         },
         setLoading: (state, action) => {
             state.isLoading = action.payload.isLoading;
