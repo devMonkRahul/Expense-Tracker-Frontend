@@ -7,7 +7,7 @@ import store from "./store/store"
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ErrorPopup from './utils/Popup/ErrorPopup/ErrorPopup.jsx'
 import DashBoard from './pages/DashBoard.jsx'
-import { Expenses, Overview, Incomes } from './components'
+import { Expenses, Overview, Incomes, Budget } from './components'
 
 const router = createBrowserRouter([
   {
@@ -29,6 +29,10 @@ const router = createBrowserRouter([
           {
             path: "/dashboard/incomes",
             element: <Incomes />,
+          },
+          {
+            path: "/dashboard/budget",
+            element: <Budget />,
           }
         ]
       }

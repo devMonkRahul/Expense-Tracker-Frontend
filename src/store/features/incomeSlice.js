@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     lastMonthIncomes: [],
     incomes: [],
+    totalMonthlyIncome: 0,
+    totalLastMonthIncome: 0,
     isLoading: false,
 }
 
@@ -31,9 +33,15 @@ const incomesSlice = createSlice({
                 state.incomes[index] = { ...state.incomes[index], ...updatedIncome};
             }
         },
+        setTotalMonthlyIncome: (state, action) => {
+            state.totalMonthlyIncome = action.payload.totalMonthlyIncome;
+        },
+        setTotalLastMonthIncome: (state, action) => {
+            state.totalLastMonthIncome = action.payload.totalLastMonthIncome;
+        }
     }
 })
 
-export const { setIncomes, addIncome, deleteIncome, updateIncome, setLoading } = incomesSlice.actions;
+export const { setIncomes, addIncome, deleteIncome, updateIncome, setLoading, setTotalMonthlyIncome, setTotalLastMonthIncome } = incomesSlice.actions;
 
 export default incomesSlice.reducer;
