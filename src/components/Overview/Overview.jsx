@@ -169,7 +169,7 @@ export default function Overview() {
   }, [expenses]);
 
   return (
-    <div className="bg-[#e5e7eb] p-8 w-full">
+    <div className={`bg-[#e5e7eb] p-8 w-full ${incomes.length !== 0 && expenses.length !== 0 ? "" : "h-full"}`}>
       {!isLoading && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
