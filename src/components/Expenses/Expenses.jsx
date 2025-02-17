@@ -61,7 +61,7 @@ export default function Expenses() {
           );
           if (response.success) {
             if (Object.keys(response.data).length !== 0)
-              dispatch(setExpenses({ expenses: response.data }));
+              dispatch(setExpenses({ expenses: response.data.expenses }));
           }
         } catch (error) {
           dispatch(setError(error.message || "An error occurred"));
@@ -120,9 +120,7 @@ export default function Expenses() {
         filteredExpensesByTitleDescriptionAndCategory.length !== 0 && (
           <>
             <TransactionTable
-              transactions={[
-                ...filteredExpensesByTitleDescriptionAndCategory,
-              ].reverse()}
+              transactions={filteredExpensesByTitleDescriptionAndCategory}
               type="expense"
               categoryColors={categoryColors}
             />

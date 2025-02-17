@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
+    lastMonthExpenses: [],
     expenses: [],
     isLoading: false,
 };
@@ -10,13 +11,15 @@ const expenseSlice = createSlice({
     initialState,
     reducers: {
         setExpenses: (state, action) => {
-            state.expenses = action.payload.expenses;
+            state.expenses = action.payload.expenses || state.expenses;
+            state.lastMonthExpenses = action.payload.lastMonthExpenses || state.lastMonthExpenses;
         },
         setLoading: (state, action) => {
             state.isLoading = action.payload.isLoading;
         },
         addExpense: (state, action) => {
             state.expenses.push(action.payload.expenses);
+            state.expenses = state.expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
         },
         deleteExpense: (state, action) => {
             state.expenses = state.expenses.filter((expense) => expense._id !== action.payload);

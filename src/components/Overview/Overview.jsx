@@ -1,15 +1,7 @@
-import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { Card, CardBody, Typography } from "@material-tailwind/react";
 import {
   ChartPie,
+  HandCoins,
   Landmark,
   SquarePercent,
   TrendingDown,
@@ -26,47 +18,36 @@ import { setError } from "../../store/features/errorSlice";
 import { setExpenses } from "../../store/features/expenseSlice";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader2.json";
+import { OverViewChart, OverviewTransactionTable } from "../index";
+import { getTotalAmount, lastMonth, lastYear, calculatePercentageChange } from "../../utils/helper";
 
-const chartData = [
-  { month: "Jan", amount: 2500 },
-  { month: "Feb", amount: 3200 },
-  { month: "Mar", amount: 2800 },
-  { month: "Apr", amount: 3500 },
-  { month: "May", amount: 2900 },
-  { month: "Jun", amount: 3100 },
-  { month: "Jul", amount: 3600 },
-  { month: "Aug", amount: 3300 },
-  { month: "Sep", amount: 3700 },
-  { month: "Oct", amount: 3400 },
-  { month: "Nov", amount: 3200 },
-  { month: "Dec", amount: 3500 },
-];
-
-const MetricCard = ({ title, value, change, icon, changeColor }) => (
+const MetricCard = ({ title, value, change, icon, changeColor, show=true, arrowIcon="up" }) => (
   <Card>
-    <CardBody className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <Typography variant="h6" color="blue-gray" className="font-normal">
-          {title}
+    <CardBody className="p-4 h-full">
+      <div className="flex flex-col justify-evenly h-full">
+        <div className="flex items-center justify-between mb-2">
+          <Typography variant="h6" color="blue-gray" className="font-normal">
+            {title}
+          </Typography>
+          {icon}
+        </div>
+        <Typography variant="h3" color="blue-gray">
+          {value}
         </Typography>
-        {icon}
+        {show && (<Typography
+          className={`flex items-center gap-1 text-sm ${
+            changeColor === "green" ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {arrowIcon === "up" ? (
+            <TrendingUp size={18} />
+          ) : (
+            <TrendingDown size={18} />
+          )}
+          <span>{change}</span>
+          from last month
+        </Typography>)}
       </div>
-      <Typography variant="h3" color="blue-gray">
-        {value}
-      </Typography>
-      <Typography
-        className={`flex items-center gap-1 text-sm ${
-          changeColor === "green" ? "text-green-500" : "text-red-500"
-        }`}
-      >
-        {changeColor === "green" ? (
-          <TrendingUp size={18} />
-        ) : (
-          <TrendingDown size={18} />
-        )}
-        <span>{change}</span>
-        from last month
-      </Typography>
     </CardBody>
   </Card>
 );
@@ -77,9 +58,14 @@ export default function Overview() {
   const token = sessionStorage.getItem("accessToken");
   const { getRequest } = useGet();
   const [isLoading, setIsLoading] = useState(false);
+  const [budgetStatus, setBudgetStatus] = useState(0);
   const incomes = useSelector((state) => state.income.incomes);
+  const lastMonthIncomes = useSelector((state) => state.income.lastMonthIncomes);
   const expenses = useSelector((state) => state.expense.expenses);
+  const lastMonthExpenses = useSelector((state) => state.expense.lastMonthExpenses);
   const userData = useSelector((state) => state.auth.userData);
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();  
 
   useEffect(() => {
     if (token) {
@@ -95,30 +81,59 @@ export default function Overview() {
               })
             );
           }
-
           const incomeResponse = await getRequest(
-            "/api/v1/transaction/getIncomes",
+            `/api/v1/transaction/getIncomes?year=${currentYear}&month=${currentMonth}`,
             token
           );
-
+    
           if (incomeResponse.success) {
             if (Object.keys(incomeResponse.data).length !== 0) {
-              dispatch(setIncomes({ incomes: incomeResponse.data }));
+              dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
+            } else {
+              dispatch(setIncomes({ incomes: [] }));
             }
           }
 
+          const lastMonthIncomeResponse = await getRequest(
+            `/api/v1/transaction/getIncomes?year=${lastYear}&month=${lastMonth}`,
+            token
+          )
+
+          if (lastMonthIncomeResponse.success) {
+            if (Object.keys(lastMonthIncomeResponse.data).length !== 0) {
+              dispatch(setIncomes({ lastMonthIncomes: lastMonthIncomeResponse.data.incomes }));
+            } else {
+              dispatch(setIncomes({ lastMonthIncomes: [] }));
+            }            
+          }
+    
           const expenseResponse = await getRequest(
-            "/api/v1/transaction/getExpenses",
+            `/api/v1/transaction/getExpenses?year=${currentYear}&month=${currentMonth}`,
             token
           );
-
+    
           if (expenseResponse.success) {
             if (Object.keys(expenseResponse.data).length !== 0) {
-              dispatch(setExpenses({ expenses: expenseResponse.data }));
+              dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
+            } else {
+              dispatch(setExpenses({ expenses: [] }));
+            }
+          }
+
+          const lastMonthExpenseResponse = await getRequest(
+            `/api/v1/transaction/getExpenses?year=${lastYear}&month=${lastMonth}`,
+            token
+          )
+
+          if (lastMonthExpenseResponse.success) {
+            if (Object.keys(lastMonthExpenseResponse.data).length !== 0) {
+              dispatch(setExpenses({ lastMonthExpenses: lastMonthExpenseResponse.data.expenses }));
+            } else {
+              dispatch(setExpenses({ lastMonthExpenses: [] }));
             }
           }
         } catch (error) {
-          dispatch(setError(error.message || "An error occurred"));
+          dispatch(setError(error.message || "An error occurred while fetching data"));
           dispatch(logout());
           console.error(error);
           navigate("/");
@@ -135,37 +150,60 @@ export default function Overview() {
     }
   }, [token, navigate, dispatch]);
 
-  const totalIncome = incomes.reduce((acc, income) => acc + income.amount, 0);
-  const totalExpense = expenses.reduce(
-    (acc, expense) => acc + expense.amount,
-    0
-  );
+  const totalIncome = getTotalAmount(incomes);
+  const totalExpense = getTotalAmount(expenses);
+  const lastMonthIncome = getTotalAmount(lastMonthIncomes);
+  const lastMonthExpense = getTotalAmount(lastMonthExpenses);
+  const incomeChange = calculatePercentageChange(totalIncome, lastMonthIncome);
+  const expenseChange = calculatePercentageChange(totalExpense, lastMonthExpense);
+  const totalMonthlyBalanceChange = calculatePercentageChange(totalIncome - totalExpense, lastMonthIncome - lastMonthExpense);
+
+  useEffect(() => {
+    if (totalExpense === 0) {
+      setBudgetStatus(0);
+    } else {
+      setBudgetStatus(
+        Math.round((totalExpense / userData?.totalBudget) * 100)
+      );
+    }
+  }, [expenses]);
 
   return (
     <div className="bg-[#e5e7eb] p-8 w-full">
       {!isLoading && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <MetricCard
               title="Total Balance"
               value={`$ ${userData?.totalBalance}`}
-              change="+8.2%"
+              show={false}
               icon={<Landmark className="text-green-400" />}
               changeColor="green"
+              className="text-[42px] text-center"
             />
             <MetricCard
-              title="Monthly Spending"
+              title="Monthly Total Balance"
+              value={`$ ${totalIncome - totalExpense}`}
+              change={`${totalMonthlyBalanceChange.toFixed(2)}%`}
+              icon={<HandCoins className="text-green-400" />}
+              changeColor={totalMonthlyBalanceChange >= 0 ? "green" : "red"}
+              arrowIcon={totalMonthlyBalanceChange >= 0 ? "up" : "down"}
+            />
+            <MetricCard
+              title="Monthly Expense"
               value={`$ ${totalExpense}`}
-              change="+12.5%"
+              change={`${expenseChange.toFixed(2)}%`}
               icon={<SquarePercent className="text-red-400" />}
-              changeColor="red"
+              changeColor={expenseChange >= 0 ? "red" : "green"}
+              arrowIcon={expenseChange >= 0 ? "up" : "down"}
             />
             <MetricCard
               title="Monthly Income"
               value={`$ ${totalIncome}`}
-              change="+4.75%"
+              change={`${incomeChange.toFixed(2)}%`}
               icon={<Wallet className="text-green-400" />}
-              changeColor="green"
+              changeColor={incomeChange >= 0 ? "green" : "red"}
+              arrowIcon={incomeChange >= 0 ? "up" : "down"}
             />
             <Card>
               <CardBody className="p-4">
@@ -180,65 +218,31 @@ export default function Overview() {
                   <ChartPie className="text-purple-400" />
                 </div>
                 <Typography variant="h3" color="blue-gray">
-                  75%
+                  {budgetStatus} %
                 </Typography>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
                   <div
                     className="bg-purple-600 h-2.5 rounded-full"
-                    style={{ width: "75%" }}
+                    style={{ width: `${budgetStatus}%` }}
                   ></div>
                 </div>
               </CardBody>
             </Card>
           </div>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center justify-between mb-4">
-                <Typography variant="h5" color="blue-gray">
-                  Expense Overview
-                </Typography>
-                <div className="flex gap-2">
-                  <Button variant="outlined" size="sm">
-                    Week
-                  </Button>
-                  <Button variant="filled" size="sm">
-                    Month
-                  </Button>
-                  <Button variant="outlined" size="sm">
-                    Year
-                  </Button>
-                </div>
-              </div>
-              <div className="h-[400px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="amount"
-                      stroke="#2196f3"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardBody>
-          </Card>
+          <OverViewChart />
+          <OverviewTransactionTable />
         </>
       )}
       {isLoading && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]"
-        >
+        <div className="absolute inset-0 flex items-center justify-center bg-[#e5e7eb]">
           <Lottie
             animationData={animationData}
             loop={true}
-            style={{ width: "300px", height: "300px", backgroundColor: "#e5e7eb" }}
+            style={{
+              width: "300px",
+              height: "300px",
+              backgroundColor: "#e5e7eb",
+            }}
           />
         </div>
       )}
