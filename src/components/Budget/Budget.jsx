@@ -115,13 +115,21 @@ export default function Budget() {
     getData();
   }, [token]);
 
-  const categories = [
-    { name: "Food & Dining", spent: 850, total: 1000, color: "yellow" },
-    { name: "Transportation", spent: 450, total: 600, color: "green" },
-    { name: "Shopping", spent: 600, total: 800, color: "purple" },
-    { name: "Entertainment", spent: 200, total: 400, color: "blue" },
-    { name: "Utilities", spent: 200, total: 400, color: "orange" },
-  ];
+  const categories = budgets.map((budget) => {
+    const matchingExpenses = categoryWiseExpenses.filter(
+      (expense) => expense.category === budget.title
+    );
+    const spent = matchingExpenses.reduce(
+      (total, expense) => total + expense.amount,
+      0
+    );
+    return {
+      id: budget._id,
+      name: budget.title,
+      spent: spent,
+      total: budget.amount,
+    };
+  });
 
   const chartData = {
     labels: categories.map((cat) => cat.name),
@@ -214,77 +222,70 @@ export default function Budget() {
           </Card>
 
           <div className="flex flex-wrap gap-6">
-            {budgets.map((budget) => {
-              const foundCategory = categoryWiseExpenses.find(
-                (category) => category.category === budget.title
-              );
-
-              const amount = foundCategory ? foundCategory.amount : 0;
-              return (
-                <Card
-                  key={budget._id}
-                  className="w-full md:w-[calc(50%-0.75rem)] shadow-lg"
+            {categories.map((category) => (
+              <Card
+                key={category.id}
+                className="w-full md:w-[calc(50%-0.75rem)] shadow-lg"
+              >
+                <CardHeader
+                  floated={false}
+                  shadow={false}
+                  className="flex items-center justify-between rounded-none bg-white px-2 py-4"
                 >
-                  <CardHeader
-                    floated={false}
-                    shadow={false}
-                    className="flex items-center justify-between rounded-none bg-white px-2 py-4"
-                  >
-                    <div>
-                      <Typography variant="h6" color="blue-gray">
-                        {budget.title}
-                      </Typography>
+                  <div>
+                    <Typography variant="h6" color="blue-gray">
+                      {category.name}
+                    </Typography>
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="opacity-70"
+                    >
+                      Monthly Budget
+                    </Typography>
+                  </div>
+                  <Menu placement="bottom-end">
+                    <MenuHandler>
+                      <IconButton variant="text" color="blue-gray">
+                        <EllipsisVertical />
+                      </IconButton>
+                    </MenuHandler>
+                    <MenuList>
+                      <MenuItem>Edit Budget</MenuItem>
+                      <MenuItem>View Details</MenuItem>
+                      <MenuItem>Delete</MenuItem>
+                    </MenuList>
+                  </Menu>
+                </CardHeader>
+                <CardBody className="pt-0 px-6 pb-6">
+                  <div className="space-y-4">
+                    <Typography variant="h5" color="blue-gray">
+                      ${category.spent}{" "}
                       <Typography
+                        as="span"
                         variant="small"
                         color="blue-gray"
                         className="opacity-70"
                       >
-                        Monthly Budget
+                        of ${category.total}
                       </Typography>
-                    </div>
-                    <Menu placement="bottom-end">
-                      <MenuHandler>
-                        <IconButton variant="text" color="blue-gray">
-                          <EllipsisVertical />
-                        </IconButton>
-                      </MenuHandler>
-                      <MenuList>
-                        <MenuItem>Edit Budget</MenuItem>
-                        <MenuItem>View Details</MenuItem>
-                        <MenuItem>Delete</MenuItem>
-                      </MenuList>
-                    </Menu>
-                  </CardHeader>
-                  <CardBody className="pt-0 px-6 pb-6">
-                    <div className="space-y-4">
-                      <Typography variant="h5" color="blue-gray">
-                        ${amount}{" "}
-                        <Typography
-                          as="span"
-                          variant="small"
-                          color="blue-gray"
-                          className="opacity-70"
-                        >
-                          of ${budget.amount}
-                        </Typography>
-                      </Typography>
-                      <Progress
-                        value={(amount / budget.amount) * 100}
-                        color={expenseCategoryColors[budget.title]}
-                        className="h-1"
-                      />
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="text-right opacity-70"
-                      >
-                        {((amount / budget.amount) * 100).toFixed()}%
-                      </Typography>
-                    </div>
-                  </CardBody>
-                </Card>
-              );
-            })}
+                    </Typography>
+                    <Progress
+                      value={(category.spent / category.total) * 100}
+                      color={expenseCategoryColors[category.name]}
+                      className="h-1"
+                    />
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="text-right opacity-70"
+                    >
+                      {((category.spent / category.total) * 100).toFixed()}%
+                    </Typography>
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
           </div>
 
           <Card className="w-full shadow-lg">
