@@ -60,3 +60,15 @@ export const calculatePercentageChange = (current, previous) => {
   }
   return ((current - previous) / previous) * 100;
 };
+
+export const categoryWiseTotal = (transactions) => {
+  return transactions.reduce((acc, curr) => {
+    const existing = acc.find((item) => item.category === curr.category);
+    if (existing) {
+      existing.amount += curr.amount;
+    } else {
+      acc.push({ ...curr });
+    }
+    return acc;
+  }, []);
+}
