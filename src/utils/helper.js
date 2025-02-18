@@ -19,6 +19,7 @@ export const incomeOptions = [
   "Business Income",
   "Investment Income",
   "Rental Income",
+  "Other",
 ];
 
 export const expenseOptions = [
@@ -27,6 +28,7 @@ export const expenseOptions = [
   "Shopping",
   "Utilities",
   "Entertainment",
+  "Other",
 ];
 
 export const incomeCategoryColors = {
