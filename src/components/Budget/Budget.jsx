@@ -35,14 +35,14 @@ ChartJS.register(
 
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useGet } from "../../hooks/useHttp";
+import { useGet, useDelete } from "../../hooks/useHttp";
 import {
   setExpenses,
   setTotalMonthlyExpense,
 } from "../../store/features/expenseSlice";
 import { setError } from "../../store/features/errorSlice";
-import { logout } from "../../store/features/authSlice";
-import { setBudgets } from "../../store/features/budgetSlice";
+import { logout, setUserData } from "../../store/features/authSlice";
+import { setBudgets, deleteBudget } from "../../store/features/budgetSlice";
 import {
   getTotalAmount,
   expenseCategoryColors,
@@ -55,7 +55,7 @@ import { BudgetModal } from "../index";
 export default function Budget() {
   const [isLoading, setIsLoading] = useState(false);
   const userData = useSelector((state) => state.auth.userData);
-  const totalBudget = userData?.totalBudget;
+  const totalBudget = useSelector((state) => state.budget.totalBudget);
   const budgets = useSelector((state) => state.budget.budgets);
   const totalSpent = useSelector((state) => state.expense.totalMonthlyExpense);
   const expenses = useSelector((state) => state.expense.expenses);
@@ -65,9 +65,34 @@ export default function Budget() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { getRequest } = useGet();
+  const { deleteRequest } = useDelete();
 
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
+
+  const handleDeleteBudget = async (e, id) => {
+    e.preventDefault();
+
+    if (token) {
+      try {
+        const response = await deleteRequest(
+          `/api/v1/budget/deleteBudget/${id}`,
+          token
+        );
+
+        if (response.success) {
+          dispatch(deleteBudget(id));
+        }
+      } catch (error) {
+        dispatch(setError(error.message || "An error occurred while deleting budget"));
+        console.error(error);
+      }
+    } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login again."));
+      navigate("/");
+    }
+  }
 
   useEffect(() => {
     const getData = async () => {
@@ -165,155 +190,163 @@ export default function Budget() {
               <BudgetModal />
             </div>
 
-            <Card className="w-full shadow-lg">
-              <CardBody className="px-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-medium opacity-70"
-                    >
-                      Total Budget
-                    </Typography>
-                    <Typography variant="h4" color="blue-gray">
-                      ${totalBudget?.toLocaleString()}
-                    </Typography>
-                  </div>
-                  <div>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-medium opacity-70"
-                    >
-                      Spent
-                    </Typography>
-                    <Typography variant="h4" color="red">
-                      ${totalSpent?.toLocaleString()}
-                    </Typography>
-                  </div>
-                  <div>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-medium opacity-70"
-                    >
-                      Remaining
-                    </Typography>
-                    <Typography variant="h4" color="green">
-                      ${totalRemaining?.toLocaleString()}
-                    </Typography>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Typography variant="small" color="blue-gray">
-                      Overall Progress
-                    </Typography>
-                    <Typography variant="small" color="blue-gray">
-                      {overallProgress.toFixed()}%
-                    </Typography>
-                  </div>
-                  <Progress
-                    value={overallProgress}
-                    color="blue"
-                    className="h-1"
-                  />
-                </div>
-              </CardBody>
-            </Card>
-
-            <div className="flex flex-wrap gap-6">
-              {categories.map((category) => (
-                <Card
-                  key={category.id}
-                  className="w-full md:w-[calc(50%-0.75rem)] shadow-lg"
-                >
-                  <CardHeader
-                    floated={false}
-                    shadow={false}
-                    className="flex items-center justify-between rounded-none bg-white px-2 py-4"
-                  >
-                    <div>
-                      <Typography variant="h6" color="blue-gray">
-                        {category.name}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="opacity-70"
-                      >
-                        Monthly Budget
-                      </Typography>
-                    </div>
-                    <Menu placement="bottom-end">
-                      <MenuHandler>
-                        <IconButton variant="text" color="blue-gray">
-                          <EllipsisVertical />
-                        </IconButton>
-                      </MenuHandler>
-                      <MenuList>
-                        <MenuItem>Edit Budget</MenuItem>
-                        <MenuItem>View Details</MenuItem>
-                        <MenuItem>Delete</MenuItem>
-                      </MenuList>
-                    </Menu>
-                  </CardHeader>
-                  <CardBody className="pt-0 px-6 pb-6">
-                    <div className="space-y-4">
-                      <Typography variant="h5" color="blue-gray">
-                        ${category.spent}{" "}
+            {budgets.length !== 0 && (
+              <>
+                <Card className="w-full shadow-lg">
+                  <CardBody className="px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                      <div>
                         <Typography
-                          as="span"
                           variant="small"
                           color="blue-gray"
-                          className="opacity-70"
+                          className="font-medium opacity-70"
                         >
-                          of ${category.total}
+                          Total Budget
                         </Typography>
-                      </Typography>
+                        <Typography variant="h4" color="blue-gray">
+                          ${totalBudget?.toLocaleString()}
+                        </Typography>
+                      </div>
+                      <div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-medium opacity-70"
+                        >
+                          Spent
+                        </Typography>
+                        <Typography variant="h4" color="red">
+                          ${totalSpent?.toLocaleString()}
+                        </Typography>
+                      </div>
+                      <div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-medium opacity-70"
+                        >
+                          Remaining
+                        </Typography>
+                        <Typography variant="h4" color="green">
+                          ${totalRemaining?.toLocaleString()}
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Typography variant="small" color="blue-gray">
+                          Overall Progress
+                        </Typography>
+                        <Typography variant="small" color="blue-gray">
+                          {overallProgress.toFixed()}%
+                        </Typography>
+                      </div>
                       <Progress
-                        value={(category.spent / category.total) * 100}
-                        color={expenseCategoryColors[category.name]}
+                        value={overallProgress}
+                        color="blue"
                         className="h-1"
                       />
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="text-right opacity-70"
-                      >
-                        {((category.spent / category.total) * 100).toFixed()}%
-                      </Typography>
                     </div>
                   </CardBody>
                 </Card>
-              ))}
-            </div>
 
-            <Card className="w-full shadow-lg">
-              <CardHeader
-                floated={false}
-                shadow={false}
-                className="rounded-none bg-white px-6 py-4"
-              >
-                <Typography variant="h6" color="blue-gray">
-                  Budget vs Actual Spending
-                </Typography>
-              </CardHeader>
-              <CardBody>
-                <div className="h-[400px]">
-                  <Bar
-                    data={chartData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      scales: { y: { beginAtZero: true } },
-                      plugins: { legend: { position: "top" } },
-                    }}
-                  />
+                <div className="flex flex-wrap gap-6">
+                  {categories.map((category) => (
+                    <Card
+                      key={category.id}
+                      className="w-full md:w-[calc(50%-0.75rem)] shadow-lg"
+                    >
+                      <CardHeader
+                        floated={false}
+                        shadow={false}
+                        className="flex items-center justify-between rounded-none bg-white px-2 py-4"
+                      >
+                        <div>
+                          <Typography variant="h6" color="blue-gray">
+                            {category.name}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="opacity-70"
+                          >
+                            Monthly Budget
+                          </Typography>
+                        </div>
+                        <Menu placement="bottom-end">
+                          <MenuHandler>
+                            <IconButton variant="text" color="blue-gray">
+                              <EllipsisVertical />
+                            </IconButton>
+                          </MenuHandler>
+                          <MenuList>
+                            <MenuItem>Edit Budget</MenuItem>
+                            <MenuItem>View Details</MenuItem>
+                            <MenuItem onClick={(e) => handleDeleteBudget(e, category.id)}>Delete</MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </CardHeader>
+                      <CardBody className="pt-0 px-6 pb-6">
+                        <div className="space-y-4">
+                          <Typography variant="h5" color="blue-gray">
+                            ${category.spent}{" "}
+                            <Typography
+                              as="span"
+                              variant="small"
+                              color="blue-gray"
+                              className="opacity-70"
+                            >
+                              of ${category.total}
+                            </Typography>
+                          </Typography>
+                          <Progress
+                            value={(category.spent / category.total) * 100}
+                            color={expenseCategoryColors[category.name]}
+                            className="h-1"
+                          />
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="text-right opacity-70"
+                          >
+                            {(
+                              (category.spent / category.total) *
+                              100
+                            ).toFixed()}
+                            %
+                          </Typography>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
                 </div>
-              </CardBody>
-            </Card>
+
+                <Card className="w-full shadow-lg">
+                  <CardHeader
+                    floated={false}
+                    shadow={false}
+                    className="rounded-none bg-white px-6 py-4"
+                  >
+                    <Typography variant="h6" color="blue-gray">
+                      Budget vs Actual Spending
+                    </Typography>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="h-[400px]">
+                      <Bar
+                        data={chartData}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          scales: { y: { beginAtZero: true } },
+                          plugins: { legend: { position: "top" } },
+                        }}
+                      />
+                    </div>
+                  </CardBody>
+                </Card>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -67,6 +67,10 @@ export default function BudgetModal() {
       } catch (error) {
         dispatch(setError(error.message || "An error occurred"));
       }
+    } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login to continue"));
+      navigate("/");
     }
   };
 
