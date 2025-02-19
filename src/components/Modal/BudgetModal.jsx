@@ -13,10 +13,21 @@ import {
 } from "@material-tailwind/react";
 import { X } from "lucide-react";
 import { expenseOptions } from "../../utils/helper";
-import { useSelector } from "react-redux"; 
+import { useSelector, useDispatch } from "react-redux"; 
+import { usePost } from "../../hooks/useHttp";
+import { setError } from "../../store/features/errorSlice";
+import { logout } from "../../store/features/authSlice";
+import { addBudget } from "../../store/features/budgetSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function BudgetModal() {
+  const { postRequest, isLoading } = usePost();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const token = sessionStorage.getItem("accessToken");
   const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState(0);
+  const [category, setCategory] = useState("");
 
   const budgets = useSelector((state) => state.budget.budgets);
   const userBudgets = budgets.map((budget) => budget.title);
@@ -25,6 +36,39 @@ export default function BudgetModal() {
   )
   
   const handleOpen = () => setOpen(!open);
+  
+  const handleAddBudget = async (e) => {
+    e.preventDefault();
+    if (category === "" || amount === 0) {
+      return;
+    }
+
+    if (token) {
+      try {
+        const response = await postRequest(
+          "/api/v1/budget/addBudget",
+          {
+            title: category,
+            amount,
+          },
+          token
+        );
+        if (response.status === 401) {
+          dispatch(logout());
+          navigate("/");
+        }
+        if (response.status === 400) {
+          dispatch(setError(response.data.error));
+        }
+        if (response.success) {
+          dispatch(addBudget({budget: response.data}));          
+        }
+        handleOpen();
+      } catch (error) {
+        dispatch(setError(error.message || "An error occurred"));
+      }
+    }
+  };
 
   return (
     <>
@@ -53,6 +97,7 @@ export default function BudgetModal() {
             <X />
           </IconButton>
         </DialogHeader>
+        <form onSubmit={handleAddBudget}>
         <DialogBody className="space-y-4 pb-6">
           <div>
             <Typography
@@ -68,9 +113,10 @@ export default function BudgetModal() {
               labelProps={{
                 className: "hidden",
               }}
+              onChange={(value) => setCategory(value)}
             >
               {filteredOptions.map((option) => (
-                <Option key={option}>{option}</Option>
+                <Option key={option} value={option}>{option}</Option>
               ))}
             </Select>
           </div>
@@ -101,10 +147,11 @@ export default function BudgetModal() {
           </div>
         </DialogBody>
         <DialogFooter>
-          <Button className="ml-auto" onClick={handleOpen}>
+          <Button className="ml-auto" type="submit">
             Add Budget
           </Button>
         </DialogFooter>
+        </form>
       </Dialog>
     </>
   );

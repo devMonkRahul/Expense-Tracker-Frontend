@@ -116,7 +116,7 @@ export default function Budget() {
       }
     };
     getData();
-  }, [token]);
+  }, [token, navigate, dispatch]);
 
   const categories = budgets.map((budget) => {
     const matchingExpenses = categoryWiseExpenses.filter(
