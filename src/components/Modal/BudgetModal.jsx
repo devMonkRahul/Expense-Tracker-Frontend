@@ -12,56 +12,68 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { X } from "lucide-react";
-import { expenseOptions } from "../../utils/helper";
-import { useSelector, useDispatch } from "react-redux"; 
+import { useDispatch } from "react-redux"; 
 import { usePost } from "../../hooks/useHttp";
 import { setError } from "../../store/features/errorSlice";
 import { logout } from "../../store/features/authSlice";
-import { addBudget } from "../../store/features/budgetSlice";
+import { addBudget, updateBudget } from "../../store/features/budgetSlice";
 import { useNavigate } from "react-router-dom";
 
-export default function BudgetModal() {
+export default function BudgetModal({ oldAmount="", options, type="add", open, handleOpen, data=null }) {
   const { postRequest, isLoading } = usePost();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = sessionStorage.getItem("accessToken");
-  const [open, setOpen] = useState(false);
-  const [amount, setAmount] = useState(0);
-  const [category, setCategory] = useState("");
-
-  const budgets = useSelector((state) => state.budget.budgets);
-  const userBudgets = budgets.map((budget) => budget.title);
-  const filteredOptions = expenseOptions.filter(
-    (option) => !userBudgets.includes(option)
-  )
-  
-  const handleOpen = () => setOpen(!open);
+  const [amount, setAmount] = useState(oldAmount);
+  const [category, setCategory] = useState("");  
   
   const handleAddBudget = async (e) => {
     e.preventDefault();
-    if (category === "" || amount === 0) {
+    if ((type === "add" && (category === "" || amount === 0)) || (type === "edit" && amount === 0)) {
       return;
     }
 
     if (token) {
       try {
-        const response = await postRequest(
-          "/api/v1/budget/addBudget",
-          {
-            title: category,
-            amount,
-          },
-          token
-        );
-        if (response.status === 401) {
-          dispatch(logout());
-          navigate("/");
-        }
-        if (response.status === 400) {
-          dispatch(setError(response.data.error));
-        }
-        if (response.success) {
-          dispatch(addBudget({budget: response.data}));          
+        if (type === "add") {
+          const response = await postRequest(
+            "/api/v1/budget/addBudget",
+            {
+              title: category,
+              amount,
+            },
+            token
+          );
+          if (response.status === 401) {
+            dispatch(logout());
+            navigate("/");
+          }
+          if (response.status === 400) {
+            dispatch(setError(response.data.error));
+          }
+          if (response.success) {
+            dispatch(addBudget({budget: response.data}));          
+          }
+        } else {
+          // const response = await postRequest(
+          //   "/api/v1/budget/updateBudget",
+          //   {
+          //     amount,
+          //   },
+          //   token
+          // );
+          // if (response.status === 401) {
+          //   dispatch(logout());
+          //   navigate("/");
+          // }
+          // if (response.status === 400) {
+          //   dispatch(setError(response.data.error));
+          // }
+          // if (response.success) {
+          //   dispatch(updateBudget({updatedBudget: response.data,}));
+          // }
+          console.log("update budget");
+          console.log(data);
         }
         handleOpen();
       } catch (error) {
@@ -76,21 +88,21 @@ export default function BudgetModal() {
 
   return (
     <>
-      <Button
+      {type === "add" && (<Button
         className="flex items-center gap-2"
         color="blue"
         size="md"
         onClick={handleOpen}
       >
         Create New Budget
-      </Button>
+      </Button>)}
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            Add Budget
+            {type === "add"? "Add" : "Edit"} Budget
           </Typography>
           <Typography className="mt-1 font-normal text-gray-600">
-            Add a new budget to your list.
+            {type === "add"? "Add a new budget to your list.": "Edit your budget."}
           </Typography>
           <IconButton
             size="sm"
@@ -103,7 +115,7 @@ export default function BudgetModal() {
         </DialogHeader>
         <form onSubmit={handleAddBudget}>
         <DialogBody className="space-y-4 pb-6">
-          <div>
+          {type === "add" && (<div>
             <Typography
               variant="small"
               color="blue-gray"
@@ -119,11 +131,11 @@ export default function BudgetModal() {
               }}
               onChange={(value) => setCategory(value)}
             >
-              {filteredOptions.map((option) => (
+              {options.map((option) => (
                 <Option key={option} value={option}>{option}</Option>
               ))}
             </Select>
-          </div>
+          </div>)}
           <div>
             <Typography
               variant="small"
@@ -147,12 +159,13 @@ export default function BudgetModal() {
                 className: "before:content-none after:content-none",
               }}
               onChange={(e) => setAmount(e.target.value)}
+              value={amount}
             />
           </div>
         </DialogBody>
         <DialogFooter>
-          <Button className="ml-auto" type="submit">
-            Add Budget
+          <Button className="ml-auto" type="submit" disabled={isLoading}>
+            {type === "add" ? "Add" : "Edit"} Budget
           </Button>
         </DialogFooter>
         </form>

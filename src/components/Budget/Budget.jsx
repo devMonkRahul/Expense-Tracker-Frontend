@@ -10,7 +10,6 @@ import {
   MenuList,
   MenuItem,
   IconButton,
-  Button,
 } from "@material-tailwind/react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -41,12 +40,13 @@ import {
   setTotalMonthlyExpense,
 } from "../../store/features/expenseSlice";
 import { setError } from "../../store/features/errorSlice";
-import { logout, setUserData } from "../../store/features/authSlice";
+import { logout } from "../../store/features/authSlice";
 import { setBudgets, deleteBudget } from "../../store/features/budgetSlice";
 import {
   getTotalAmount,
   expenseCategoryColors,
   categoryWiseTotal,
+  expenseOptions,
 } from "../../utils/helper";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader.json";
@@ -54,7 +54,6 @@ import { BudgetModal } from "../index";
 
 export default function Budget() {
   const [isLoading, setIsLoading] = useState(false);
-  const userData = useSelector((state) => state.auth.userData);
   const totalBudget = useSelector((state) => state.budget.totalBudget);
   const budgets = useSelector((state) => state.budget.budgets);
   const totalSpent = useSelector((state) => state.expense.totalMonthlyExpense);
@@ -69,6 +68,25 @@ export default function Budget() {
 
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
+
+  const userBudgets = budgets.map((budget) => budget.title);
+  const filteredOptions = expenseOptions.filter(
+    (option) => !userBudgets.includes(option)
+  )
+
+  const [addOpen, setAddOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [data, setData] = useState(null);
+
+  const handleAddOpen = () => {
+    setAddOpen(!addOpen);
+  }
+
+  const handleEditOpen = (data) => {
+    setEditOpen(!editOpen);
+    if (!editOpen)
+      setData(data);
+  }
 
   const handleDeleteBudget = async (e, id) => {
     e.preventDefault();
@@ -187,7 +205,8 @@ export default function Budget() {
               <Typography variant="h4" color="blue-gray">
                 Budget Management
               </Typography>
-              <BudgetModal />
+              <BudgetModal options={filteredOptions} type="add" open={addOpen} handleOpen={handleAddOpen}/>
+              <BudgetModal options={expenseOptions} type="edit" open={editOpen} handleOpen={handleEditOpen} data={data}/>
             </div>
 
             {budgets.length !== 0 && (
@@ -280,8 +299,8 @@ export default function Budget() {
                             </IconButton>
                           </MenuHandler>
                           <MenuList>
-                            <MenuItem>Edit Budget</MenuItem>
-                            <MenuItem>View Details</MenuItem>
+                            {/* <MenuItem>View Details</MenuItem> */}
+                            <MenuItem onClick={() => handleEditOpen(category)}>Edit Budget</MenuItem>
                             <MenuItem onClick={(e) => handleDeleteBudget(e, category.id)}>Delete</MenuItem>
                           </MenuList>
                         </Menu>
