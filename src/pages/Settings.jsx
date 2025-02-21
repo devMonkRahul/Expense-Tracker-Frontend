@@ -78,7 +78,7 @@ export default function SettingsPage() {
             </Typography>
             <Typography
               variant="small"
-              color={darkMode ? "gray" : "blue-gray"}
+              color={darkMode ? "white" : "blue-gray"}
               className="opacity-70"
             >
               Manage your account settings and preferences

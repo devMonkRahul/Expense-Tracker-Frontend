@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Navbar,
   Collapse,
@@ -19,7 +19,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../store/features/authSlice";
 import { setIncomes } from "../../store/features/incomeSlice";
 import { setExpenses } from "../../store/features/expenseSlice";
-import { Power, Menu as MenuIcon, ChevronDown, CircleUserRound, Settings, CirclePower } from "lucide-react";
+import { Power, Menu as MenuIcon, ChevronDown, Settings, CirclePower } from "lucide-react";
 import { SidebarContent } from "../index";
 
 
@@ -64,13 +64,20 @@ function ProfileMenu() {
     },
   ];
 
+  useEffect(() => {
+    // Check if user previously selected dark mode
+    const isDark = localStorage.getItem("darkMode") === "true";
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
         <Button
           variant="text"
-          color="blue-gray"
-          className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
+          className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto bg-white dark:bg-blue-gray-300"
         >
           <Avatar
             variant="circular"
@@ -86,16 +93,16 @@ function ProfileMenu() {
           />
         </Button>
       </MenuHandler>
-      <MenuList className="p-1">
+      <MenuList className="p-1 rounded-2xl shadow-lg bg-white dark:bg-blue-gray-800">
         {profileMenuItems.map(({ label, icon, onClick }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
           return (
             <MenuItem
               key={label}
               onClick={onClick}
-              className={`flex items-center gap-2 rounded ${
+              className={`flex items-center gap-2 rounded-xl hover:dark:opacity-70 dark:text-white dark:hover:text-black ${
                 isLastItem
-                  ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                  ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10 hover:dark:bg-red-100"
                   : ""
               }`}
             >
@@ -134,8 +141,8 @@ export function StickyNavbar() {
 
   return (
     <>
-      <div className="w-full sticky top-0 z-10">
-        <Navbar className="z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-3">
+      <div className="w-full sticky top-0 z-10 border-none">
+        <Navbar className="z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-3 shadow-lg bg-white dark:bg-blue-gray-900 dark:border-none">
           <div className="flex items-center justify-between text-blue-gray-900">
             {token && openSidebar && (
               <IconButton
@@ -147,7 +154,7 @@ export function StickyNavbar() {
               </IconButton>
             )}
             <Typography
-              className="mr-4 cursor-pointer font-bold text-lg"
+              className="mr-4 cursor-pointer font-bold text-lg text-black dark:text-white"
             >
               Expense Tracker
             </Typography>
