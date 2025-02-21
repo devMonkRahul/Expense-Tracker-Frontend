@@ -13,21 +13,22 @@ import {
 } from "@material-tailwind/react";
 import { X } from "lucide-react";
 import { useDispatch } from "react-redux"; 
-import { usePost } from "../../hooks/useHttp";
+import { usePost, usePatch } from "../../hooks/useHttp";
 import { setError } from "../../store/features/errorSlice";
 import { logout } from "../../store/features/authSlice";
 import { addBudget, updateBudget } from "../../store/features/budgetSlice";
 import { useNavigate } from "react-router-dom";
 
-export default function BudgetModal({ oldAmount="", options, type="add", open, handleOpen, data=null }) {
+export default function BudgetModal({ options, type="add", open, handleOpen, data=null }) {
   const { postRequest, isLoading } = usePost();
+  const { patchRequest } = usePatch();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = sessionStorage.getItem("accessToken");
-  const [amount, setAmount] = useState(oldAmount);
+  const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");  
   
-  const handleAddBudget = async (e) => {
+  const handleBudget = async (e) => {
     e.preventDefault();
     if ((type === "add" && (category === "" || amount === 0)) || (type === "edit" && amount === 0)) {
       return;
@@ -55,29 +56,32 @@ export default function BudgetModal({ oldAmount="", options, type="add", open, h
             dispatch(addBudget({budget: response.data}));          
           }
         } else {
-          // const response = await postRequest(
-          //   "/api/v1/budget/updateBudget",
-          //   {
-          //     amount,
-          //   },
-          //   token
-          // );
-          // if (response.status === 401) {
-          //   dispatch(logout());
-          //   navigate("/");
-          // }
-          // if (response.status === 400) {
-          //   dispatch(setError(response.data.error));
-          // }
-          // if (response.success) {
-          //   dispatch(updateBudget({updatedBudget: response.data,}));
-          // }
-          console.log("update budget");
-          console.log(data);
+          if (data) {
+            const response = await patchRequest(
+              `/api/v1/budget/updateBudget/${data.id}`,
+              {
+                amount,
+              },
+              token
+            );
+            if (response.status === 401) {
+              dispatch(logout());
+              navigate("/");
+            }
+            if (response.status === 400) {
+              dispatch(setError(response.data.error));
+            }
+            if (response.success) {
+              dispatch(updateBudget({updatedBudget: response.data, id: data.id}));
+            }
+          }
         }
         handleOpen();
       } catch (error) {
         dispatch(setError(error.message || "An error occurred"));
+      } finally {
+        setAmount("");
+        setCategory("");
       }
     } else {
       dispatch(logout());
@@ -86,6 +90,11 @@ export default function BudgetModal({ oldAmount="", options, type="add", open, h
     }
   };
 
+  const handleClose = () => {
+    handleOpen();
+    setAmount("");
+    setCategory("");
+  }
   return (
     <>
       {type === "add" && (<Button
@@ -96,7 +105,7 @@ export default function BudgetModal({ oldAmount="", options, type="add", open, h
       >
         Create New Budget
       </Button>)}
-      <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
+      <Dialog size="sm" open={open} handler={handleClose} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
             {type === "add"? "Add" : "Edit"} Budget
@@ -108,12 +117,12 @@ export default function BudgetModal({ oldAmount="", options, type="add", open, h
             size="sm"
             variant="text"
             className="!absolute right-3.5 top-3.5"
-            onClick={handleOpen}
+            onClick={handleClose}
           >
             <X />
           </IconButton>
         </DialogHeader>
-        <form onSubmit={handleAddBudget}>
+        <form onSubmit={handleBudget}>
         <DialogBody className="space-y-4 pb-6">
           {type === "add" && (<div>
             <Typography
