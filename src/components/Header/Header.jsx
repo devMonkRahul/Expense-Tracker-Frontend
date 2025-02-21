@@ -34,20 +34,20 @@ function ProfileMenu() {
   const userData = useSelector((state) => state.auth.userData);
 
   const profileMenuItems = [
+    // {
+    //   label: "My Profile",
+    //   icon: <CircleUserRound />,
+    //   onClick: () => {
+    //     console.log("My Profile");
+    //     closeMenu();
+    //   },
+    // },
     {
-      label: "My Profile",
-      icon: <CircleUserRound />,
-      onClick: () => {
-        console.log("My Profile");
-        closeMenu();
-      },
-    },
-    {
-      label: "Edit Profile",
+      label: "Settings",
       icon: <Settings />,
       onClick: () => {
-        console.log("Edit Profile");
         closeMenu();
+        navigate("/settings");
       },
     },
     {
