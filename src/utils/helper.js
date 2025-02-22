@@ -37,6 +37,7 @@ export const incomeCategoryColors = {
   "Business Income": "purple",
   "Investment Income": "yellow",
   "Rental Income": "red",
+  Other: "teal",
 };
 
 export const expenseCategoryColors = {
@@ -45,6 +46,21 @@ export const expenseCategoryColors = {
   Shopping: "purple",
   Utilities: "yellow",
   Entertainment: "red",
+  Other: "teal",
+};
+
+export const pieChartColors = {
+  Salary: "#4287f5",
+  Freelance: "#42f5a7",
+  "Business Income": "#a742f5",
+  "Investment Income": "#f5d742",
+  "Rental Income": "#f54242",
+  "Food & Dining": "#4287f5",
+  Transportation: "#42f5a7",
+  Shopping: "#a742f5",
+  Utilities: "#f5d742",
+  Entertainment: "#f54242",
+  Other: "#14B8A6",
 };
 
 export const getTotalAmount = (transactions) => {

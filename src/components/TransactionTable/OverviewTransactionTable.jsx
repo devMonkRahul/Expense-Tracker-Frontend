@@ -17,9 +17,11 @@ import {
   ChartCandlestick,
   CircleDollarSign,
   Coffee,
+  HandHeart,
   Handshake,
   Headphones,
   Home,
+  HousePlus,
   Plane,
   ShoppingBag,
 } from "lucide-react";
@@ -38,6 +40,7 @@ export default function OverviewTransactionTable() {
     Shopping: <ShoppingBag size={20} strokeWidth={2} />,
     Utilities: <Activity size={20} strokeWidth={2} />,
     Entertainment: <Headphones size={20} strokeWidth={2} />,
+    Other: <HousePlus size={20} strokeWidth={2} />,
   };
 
   const incomeCategoryIcons = {
@@ -46,6 +49,7 @@ export default function OverviewTransactionTable() {
     "Business Income": <Handshake size={20} strokeWidth={2} />,
     "Investment Income": <ChartCandlestick size={20} strokeWidth={2} />,
     "Rental Income": <Home size={20} strokeWidth={2} />,
+    Other: <HandHeart size={20} strokeWidth={2} />,
   };
 
   return (

@@ -9,6 +9,7 @@ import { logout } from '../../store/features/authSlice'
 import { setError } from '../../store/features/errorSlice'
 import { deleteIncome } from '../../store/features/incomeSlice'
 import { deleteExpense } from '../../store/features/expenseSlice'
+import { incomeOptions, expenseOptions } from '../../utils/helper'
 
 export default function TransactionTable({ transactions, type="income", categoryColors }) {
   const color = type === "expense" ? "red" : "green"
@@ -20,21 +21,6 @@ export default function TransactionTable({ transactions, type="income", category
     const year = date.getFullYear();  
     return `${day}-${month}-${year}`;
   }
-  const incomeOptions = [
-    "Salary",
-    "Freelance",
-    "Business Income",
-    "Investment Income",
-    "Rental Income",
-  ]
-
-  const expenseOptions = [
-    "Food & Dining",
-    "Transportation",
-    "Shopping",
-    "Utilities",
-    "Entertainment",
-  ]
 
   const { deleteRequest } = useDelete();
   const token = sessionStorage.getItem("accessToken");

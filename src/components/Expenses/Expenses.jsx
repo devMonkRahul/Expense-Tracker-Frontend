@@ -9,22 +9,7 @@ import { Chart, CategoryBreakdown, TransactionTable } from "../index";
 import { useGet } from "../../hooks/useHttp";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader.json";
-
-const categoryColors = {
-  "Food & Dining": "blue",
-  Transportation: "green",
-  Shopping: "purple",
-  Utilities: "yellow",
-  Entertainment: "red",
-};
-
-const pieChartColors = {
-  "Food & Dining": "#4287f5",
-  Transportation: "#42f5a7",
-  Shopping: "#a742f5",
-  Utilities: "#f5d742",
-  Entertainment: "#f54242",
-};
+import { pieChartColors, expenseCategoryColors as categoryColors } from "../../utils/helper";
 
 export default function Expenses() {
   const dispatch = useDispatch();

@@ -25,12 +25,12 @@ export default function BudgetModal({ options, type="add", open, handleOpen, dat
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = sessionStorage.getItem("accessToken");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(type === "edit" && data ? data.total : "");
   const [category, setCategory] = useState("");  
   
   const handleBudget = async (e) => {
     e.preventDefault();
-    if ((type === "add" && (category === "" || amount === 0)) || (type === "edit" && amount === 0)) {
+    if ((type === "add" && (category === "" || amount === "")) || (type === "edit" && amount === "")) {
       return;
     }
 
@@ -56,7 +56,7 @@ export default function BudgetModal({ options, type="add", open, handleOpen, dat
             dispatch(addBudget({budget: response.data}));          
           }
         } else {
-          if (data) {
+          if (data && amount !== data.total) {
             const response = await patchRequest(
               `/api/v1/budget/updateBudget/${data.id}`,
               {
@@ -74,7 +74,7 @@ export default function BudgetModal({ options, type="add", open, handleOpen, dat
             if (response.success) {
               dispatch(updateBudget({updatedBudget: response.data, id: data.id}));
             }
-          }
+          } else return
         }
         handleOpen();
       } catch (error) {

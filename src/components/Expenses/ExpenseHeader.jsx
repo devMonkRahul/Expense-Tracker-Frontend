@@ -2,20 +2,15 @@ import React from "react";
 import { Select, Option } from "@material-tailwind/react";
 import { Search } from "lucide-react";
 import { AddTransactionModal } from "../index";
+import { expenseOptions } from "../../utils/helper";
 
 export default function ExpenseHeader({ setSelectedCategory, setSelectedText }) {
-  const options = [
-    "All Categories",
-    "Food & Dining",
-    "Transportation",
-    "Shopping",
-    "Utilities",
-    "Entertainment",
-  ];
+  const options = ["All Categories", ...expenseOptions];
+
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6 bg-white p-4 rounded-lg shadow-lg">
       <div className="flex gap-4">
-        <AddTransactionModal options={options} type="expense" />
+        <AddTransactionModal options={expenseOptions} type="expense" />
         <Select
           label="All Categories"
           size="md"
