@@ -11,16 +11,24 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserData, login } from "../store/features/authSlice";
-import { useGet } from "../hooks/useHttp";
+import { setUserData, login, logout } from "../store/features/authSlice";
+import { useGet, usePatch } from "../hooks/useHttp";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
+import { currencyOptions, currencyValues } from "../utils/helper";
+import { setError } from "../store/features/errorSlice";
 
 export default function SettingsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { getRequest } = useGet();
+  const { patchRequest, isLoading } = usePatch();
   const userData = useSelector((state) => state.auth.userData);
+  const [darkMode, setDarkMode] = useState(false);
+  const [currency, setCurrency] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
 
   const token = sessionStorage.getItem("accessToken");
 
@@ -47,8 +55,16 @@ export default function SettingsPage() {
     } else {
       navigate("/");
     }
-  }, []);
-  const [darkMode, setDarkMode] = useState(false);
+  }, [token, dispatch, navigate]);
+
+  useEffect(() => {
+    if (userData) {
+      setUsername(userData.username);
+      setFullName(userData.fullName);
+      setEmail(userData.email);
+      setCurrency(userData.currency);
+    }
+  }, [userData]);
 
   useEffect(() => {
     // Check if user previously selected dark mode
@@ -63,6 +79,43 @@ export default function SettingsPage() {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle("dark");
     localStorage.setItem("darkMode", (!darkMode).toString());
+  };  
+
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+
+    if (token) {
+      try {
+        let data = {};
+        if (currency !== userData?.currency) data.currency = currency;
+        if (username !== userData?.username) data.username = username;
+        if (fullName !== userData?.fullName) data.fullName = fullName;
+        if (email !== userData?.email) data.email = email;
+
+        if (Object.keys(data).length === 0) return;
+      
+        const response = await patchRequest(
+          "/api/v1/user/profile/update",
+          data,
+          token
+        );
+        if (response.success) {
+          dispatch(
+            setUserData({
+              userData: response.data,
+              accessToken: token,
+            })
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        dispatch(setError(error.message || "An error occurred while updating your profile"));
+      }
+    } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login again"));
+      navigate("/");
+    }
   };
 
   return (
@@ -117,30 +170,33 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 gap-6">
               <Input
                 label="User Name"
-                defaultValue={userData?.username}
+                defaultValue={username}
                 color={darkMode ? "white" : "gray"}
                 className="!text-gray-900 dark:!text-white"
                 labelProps={{
                   className: "!text-gray-900 dark:!text-white",
                 }}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <Input
                 label="Full Name"
-                defaultValue={userData?.fullName}
+                defaultValue={fullName}
                 color={darkMode ? "white" : "gray"}
                 className="!text-gray-900 dark:!text-white"
                 labelProps={{
                   className: "!text-gray-900 dark:!text-white",
                 }}
+                onChange={(e) => setFullName(e.target.value)}
               />
               <Input
                 label="Email Address"
-                defaultValue={userData?.email}
+                defaultValue={email}
                 color={darkMode ? "white" : "gray"}
                 className="!text-gray-900 dark:!text-white"
                 labelProps={{
                   className: "!text-gray-900 dark:!text-white",
                 }}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </CardBody>
@@ -166,18 +222,18 @@ export default function SettingsPage() {
               </Typography>
               <Select
                 label="Select Currency"
-                defaultValue="usd"
-                color={darkMode ? "white" : "gray"}
+                value={currency}
+                onChange={(value) => setCurrency(value)}
                 className="!text-gray-900 dark:!text-white"
                 labelProps={{
                   className: "!text-gray-900 dark:!text-white",
                 }}
               >
-                <Option value="inr">INR (₹)</Option>
-                <Option value="usd">USD ($)</Option>
-                <Option value="eur">EUR (€)</Option>
-                <Option value="gbp">GBP (£)</Option>
-                <Option value="jpy">JPY (¥)</Option>
+                {currencyOptions.map((currency) => (
+                  <Option key={currency} value={currencyValues[currency]}>
+                    {currency}
+                  </Option>
+                ))}
               </Select>
             </div>
           </CardBody>
@@ -225,7 +281,13 @@ export default function SettingsPage() {
             <ArrowLeft size={20} />
             Back
           </Button>
-          <Button size="lg" color="blue" className="rounded-full">
+          <Button
+            size="lg"
+            color="blue"
+            className="rounded-full"
+            onClick={(e) => handleSaveChanges(e)}
+            disabled={isLoading}
+          >
             Save Changes
           </Button>
         </div>

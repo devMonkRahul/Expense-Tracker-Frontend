@@ -63,6 +63,30 @@ export const pieChartColors = {
   Other: "#14B8A6",
 };
 
+export const currencyOptions = [
+  "INR (₹)",
+  "USD ($)",
+  "EUR (€)",
+  "GBP (£)",
+  "JPY (¥)"
+]
+
+export const currencyValues = {
+  "INR (₹)": "INR",
+  "USD ($)": "USD",
+  "EUR (€)": "EUR",
+  "GBP (£)": "GBP",
+  "JPY (¥)": "JPY"
+}
+
+export const currencySymbols = {
+  "INR": "₹",
+  "USD": "$",
+  "EUR": "€",
+  "GBP": "£",
+  "JPY": "¥"
+}
+
 export const getTotalAmount = (transactions) => {
   return transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
 }
