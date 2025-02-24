@@ -14,8 +14,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserData, login, logout } from "../store/features/authSlice";
 import { useGet, usePatch } from "../hooks/useHttp";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Moon, Sun } from "lucide-react";
-import { currencyOptions, currencyValues } from "../utils/helper";
+import {
+  ArrowLeft,
+  CircleAlert,
+  CircleCheckBig,
+  Moon,
+  Sun,
+} from "lucide-react";
+import {
+  currencyOptions,
+  currencyValues,
+  validateEmail,
+} from "../utils/helper";
 import { setError } from "../store/features/errorSlice";
 
 export default function SettingsPage() {
@@ -29,8 +39,89 @@ export default function SettingsPage() {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [usernameAvailable, setUsernameAvailable] = useState(true);
+  const [usernameLoading, setUsernameLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailAvailable, setEmailAvailable] = useState(true);
+  const [emailAvailableByRegex, setEmailAvailableByRegex] = useState(true);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   const token = sessionStorage.getItem("accessToken");
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (!validateEmail(e.target.value)) {
+      setEmailError("Please enter a valid email address");
+      setEmailAvailableByRegex(false);
+    } else {
+      setEmailError("");
+      setEmailAvailableByRegex(true);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      if (email && emailAvailableByRegex) {
+        const checkEmailAvailability = async () => {
+          try {
+            setEmailLoading(true);
+            const response = await getRequest(
+              `/api/v1/user/validate/email/${email}`,
+              token
+            );
+            setEmailAvailable(response.data.available);
+            if (!response.data.available) setEmailError(response.message);
+          } catch (error) {
+            console.error(error);
+            dispatch(
+              setError("An error occurred while checking email availability")
+            );
+          } finally {
+            setEmailLoading(false);
+          }
+        };
+        checkEmailAvailability();
+      }
+    } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login again"));
+      navigate("/");
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (token) {
+      if (username && username.length >= 3) {
+        const checkUsernameAvailability = async () => {
+          try {
+            setUsernameLoading(true);
+            const response = await getRequest(
+              `/api/v1/user/validate/username/${username}`,
+              token
+            );
+            setUsernameAvailable(response.data.available);
+            if (!response.data.available) setUsernameError(response.message);
+          } catch (error) {
+            console.error(error);
+            dispatch(
+              setError("An error occurred while checking username availability")
+            );
+          } finally {
+            setUsernameLoading(false);
+          }
+        };
+        checkUsernameAvailability();
+      } else {
+        setUsernameAvailable(false);
+        setUsernameError("Username should be at least 3 characters long");
+      }
+    } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login again"));
+      navigate("/");
+    }
+  }, [username]);
 
   useEffect(() => {
     if (token) {
@@ -53,6 +144,8 @@ export default function SettingsPage() {
       };
       getUserProfile();
     } else {
+      dispatch(logout());
+      dispatch(setError("Session expired. Please login again"));
       navigate("/");
     }
   }, [token, dispatch, navigate]);
@@ -79,37 +172,55 @@ export default function SettingsPage() {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle("dark");
     localStorage.setItem("darkMode", (!darkMode).toString());
-  };  
+  };
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
 
     if (token) {
-      try {
-        let data = {};
-        if (currency !== userData?.currency) data.currency = currency;
-        if (username !== userData?.username) data.username = username;
-        if (fullName !== userData?.fullName) data.fullName = fullName;
-        if (email !== userData?.email) data.email = email;
+      if (
+        usernameAvailable &&
+        emailAvailable &&
+        emailAvailableByRegex &&
+        !usernameLoading &&
+        !emailLoading
+      ) {
+        try {
+          let data = {};
+          if (currency !== userData?.currency) data.currency = currency;
+          if (username !== userData?.username) data.username = username;
+          if (fullName !== userData?.fullName) data.fullName = fullName;
+          if (email !== userData?.email) data.email = email;
 
-        if (Object.keys(data).length === 0) return;
-      
-        const response = await patchRequest(
-          "/api/v1/user/profile/update",
-          data,
-          token
-        );
-        if (response.success) {
+          if (Object.keys(data).length === 0) return;
+
+          const response = await patchRequest(
+            "/api/v1/user/profile/update",
+            data,
+            token
+          );
+          if (response.success) {
+            dispatch(
+              setUserData({
+                userData: response.data,
+                accessToken: token,
+              })
+            );
+          }
+        } catch (error) {
+          console.error(error);
           dispatch(
-            setUserData({
-              userData: response.data,
-              accessToken: token,
-            })
+            setError(
+              error.message || "An error occurred while updating your profile"
+            )
           );
         }
-      } catch (error) {
-        console.error(error);
-        dispatch(setError(error.message || "An error occurred while updating your profile"));
+      } else {
+        dispatch(
+          setError(
+            "Please validate the details before saving your changes"
+          )
+        );
       }
     } else {
       dispatch(logout());
@@ -168,16 +279,64 @@ export default function SettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-              <Input
-                label="User Name"
-                defaultValue={username}
-                color={darkMode ? "white" : "gray"}
-                className="!text-gray-900 dark:!text-white"
-                labelProps={{
-                  className: "!text-gray-900 dark:!text-white",
-                }}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+              <div className="flex items-center justify-between gap-4">
+                <Input
+                  label="User Name"
+                  defaultValue={username}
+                  color={darkMode ? "white" : "gray"}
+                  className="!text-gray-900 dark:!text-white"
+                  labelProps={{
+                    className: "!text-gray-900 dark:!text-white",
+                  }}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+                <IconButton
+                  variant="text"
+                  color={usernameAvailable ? "green" : "red"}
+                  className="rounded-full mr-4"
+                >
+                  {usernameAvailable ? (
+                    <CircleCheckBig size={30} />
+                  ) : (
+                    <CircleAlert size={30} />
+                  )}
+                </IconButton>
+              </div>
+              {!usernameAvailable && (
+                <Typography variant="small" color="red" className="-my-4 ml-2">
+                  {usernameError}
+                </Typography>
+              )}
+              <div className="flex items-center justify-between gap-4">
+                <Input
+                  label="Email Address"
+                  defaultValue={email}
+                  color={darkMode ? "white" : "gray"}
+                  className="!text-gray-900 dark:!text-white"
+                  labelProps={{
+                    className: "!text-gray-900 dark:!text-white",
+                  }}
+                  onChange={(e) => handleEmailChange(e)}
+                />
+                <IconButton
+                  variant="text"
+                  color={
+                    emailAvailableByRegex && emailAvailable ? "green" : "red"
+                  }
+                  className="rounded-full mr-4"
+                >
+                  {emailAvailableByRegex && emailAvailable ? (
+                    <CircleCheckBig size={30} />
+                  ) : (
+                    <CircleAlert size={30} />
+                  )}
+                </IconButton>
+              </div>
+              {(!emailAvailableByRegex || !emailAvailable) && (
+                <Typography variant="small" color="red" className="-my-4 ml-2">
+                  {emailError}
+                </Typography>
+              )}
               <Input
                 label="Full Name"
                 defaultValue={fullName}
@@ -187,16 +346,6 @@ export default function SettingsPage() {
                   className: "!text-gray-900 dark:!text-white",
                 }}
                 onChange={(e) => setFullName(e.target.value)}
-              />
-              <Input
-                label="Email Address"
-                defaultValue={email}
-                color={darkMode ? "white" : "gray"}
-                className="!text-gray-900 dark:!text-white"
-                labelProps={{
-                  className: "!text-gray-900 dark:!text-white",
-                }}
-                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </CardBody>
