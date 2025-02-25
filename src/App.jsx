@@ -1,15 +1,16 @@
 import React from 'react'
 import { StickyNavbar as Navbar } from './components'
 import { Outlet } from 'react-router-dom'
+import { ThemeProvider } from '@material-tailwind/react'
 
-function App() {
+export default function App() {
 
   return (
     <>
-      <Navbar />
-      <Outlet />
+      <ThemeProvider>
+        <Navbar />
+        <Outlet />
+      </ThemeProvider>
     </>
   )
 }
-
-export default App

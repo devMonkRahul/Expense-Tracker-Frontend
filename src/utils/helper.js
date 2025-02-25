@@ -19,6 +19,7 @@ export const incomeOptions = [
   "Business Income",
   "Investment Income",
   "Rental Income",
+  "Other",
 ];
 
 export const expenseOptions = [
@@ -27,6 +28,7 @@ export const expenseOptions = [
   "Shopping",
   "Utilities",
   "Entertainment",
+  "Other",
 ];
 
 export const incomeCategoryColors = {
@@ -35,6 +37,7 @@ export const incomeCategoryColors = {
   "Business Income": "purple",
   "Investment Income": "yellow",
   "Rental Income": "red",
+  Other: "teal",
 };
 
 export const expenseCategoryColors = {
@@ -43,7 +46,46 @@ export const expenseCategoryColors = {
   Shopping: "purple",
   Utilities: "yellow",
   Entertainment: "red",
+  Other: "teal",
 };
+
+export const pieChartColors = {
+  Salary: "#4287f5",
+  Freelance: "#42f5a7",
+  "Business Income": "#a742f5",
+  "Investment Income": "#f5d742",
+  "Rental Income": "#f54242",
+  "Food & Dining": "#4287f5",
+  Transportation: "#42f5a7",
+  Shopping: "#a742f5",
+  Utilities: "#f5d742",
+  Entertainment: "#f54242",
+  Other: "#14B8A6",
+};
+
+export const currencyOptions = [
+  "INR (₹)",
+  "USD ($)",
+  "EUR (€)",
+  "GBP (£)",
+  "JPY (¥)"
+]
+
+export const currencyValues = {
+  "INR (₹)": "INR",
+  "USD ($)": "USD",
+  "EUR (€)": "EUR",
+  "GBP (£)": "GBP",
+  "JPY (¥)": "JPY"
+}
+
+export const currencySymbols = {
+  "INR": "₹",
+  "USD": "$",
+  "EUR": "€",
+  "GBP": "£",
+  "JPY": "¥"
+}
 
 export const getTotalAmount = (transactions) => {
   return transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
@@ -60,3 +102,20 @@ export const calculatePercentageChange = (current, previous) => {
   }
   return ((current - previous) / previous) * 100;
 };
+
+export const categoryWiseTotal = (transactions) => {
+  return transactions.reduce((acc, curr) => {
+    const existing = acc.find((item) => item.category === curr.category);
+    if (existing) {
+      existing.amount += curr.amount;
+    } else {
+      acc.push({ ...curr });
+    }
+    return acc;
+  }, []);
+}
+
+export const validateEmail = (email) => {
+  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return re.test(email);
+}

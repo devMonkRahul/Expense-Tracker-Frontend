@@ -3,14 +3,17 @@ import { Card, CardBody, Typography, Chip, IconButton } from "@material-tailwind
 import { Trash2 } from "lucide-react"
 import { EditTransactionModal } from "../index"
 import { useDelete } from '../../hooks/useHttp'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../../store/features/authSlice'
 import { setError } from '../../store/features/errorSlice'
 import { deleteIncome } from '../../store/features/incomeSlice'
 import { deleteExpense } from '../../store/features/expenseSlice'
+import { incomeOptions, expenseOptions, currencySymbols } from '../../utils/helper'
 
 export default function TransactionTable({ transactions, type="income", categoryColors }) {
+  const userData = useSelector((state) => state.auth.userData);
+  const currency = currencySymbols[userData?.currency];
   const color = type === "expense" ? "red" : "green"
   const formatDate = (mongoDate) => {
     const date = new Date(mongoDate);
@@ -20,21 +23,6 @@ export default function TransactionTable({ transactions, type="income", category
     const year = date.getFullYear();  
     return `${day}-${month}-${year}`;
   }
-  const incomeOptions = [
-    "Salary",
-    "Freelance",
-    "Business Income",
-    "Investment Income",
-    "Rental Income",
-  ]
-
-  const expenseOptions = [
-    "Food & Dining",
-    "Transportation",
-    "Shopping",
-    "Utilities",
-    "Entertainment",
-  ]
 
   const { deleteRequest } = useDelete();
   const token = sessionStorage.getItem("accessToken");
@@ -113,7 +101,7 @@ export default function TransactionTable({ transactions, type="income", category
                   </td>
                   <td className="p-4">
                     <Typography variant="small" color={color} className="font-normal">
-                      ${amount}
+                      {currency}{amount}
                     </Typography>
                   </td>
                   <td className="p-4">

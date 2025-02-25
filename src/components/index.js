@@ -13,6 +13,9 @@ import AddTransactionModal from "./Modal/AddTransactionModal";
 import EditTransactionModal from "./Modal/EditTransactionModal";
 import OverViewChart from "./Chart/OverViewChart";
 import OverviewTransactionTable from "./TransactionTable/OverviewTransactionTable";
+import Budget from "./Budget/Budget";
+import BudgetModal from "./Modal/BudgetModal";
+import UpdatePasswordModal from "./Modal/UpdatePasswordModal";
 
 export {
   StickyNavbar,
@@ -31,4 +34,7 @@ export {
   EditTransactionModal,
   OverViewChart,
   OverviewTransactionTable,
+  Budget,
+  BudgetModal,
+  UpdatePasswordModal,
 };

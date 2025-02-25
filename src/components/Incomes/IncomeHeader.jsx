@@ -2,20 +2,14 @@ import React from 'react'
 import { Select, Option } from "@material-tailwind/react";
 import { Search } from "lucide-react";
 import { AddTransactionModal } from '../index';
+import { incomeOptions } from '../../utils/helper';
 
 export default function IncomeHeader({ setSelectedCategory, setSelectedText }) {
-  const options = [
-    "All Categories",
-    "Salary",
-    "Freelance",
-    "Business Income",
-    "Investment Income",
-    "Rental Income",
-  ]
+  const options = ["All Categories", ...incomeOptions];
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6 bg-white p-4 rounded-lg shadow-lg">
       <div className="flex gap-4">
-        <AddTransactionModal options={options} type='income'/>
+        <AddTransactionModal options={incomeOptions} type='income'/>
         <Select 
           label="All Categories" 
           size="lg"

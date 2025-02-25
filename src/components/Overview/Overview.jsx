@@ -13,13 +13,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGet } from "../../hooks/useHttp";
 import { logout, setUserData } from "../../store/features/authSlice";
-import { setIncomes } from "../../store/features/incomeSlice";
+import { setIncomes, setTotalMonthlyIncome, setTotalLastMonthIncome } from "../../store/features/incomeSlice";
 import { setError } from "../../store/features/errorSlice";
-import { setExpenses } from "../../store/features/expenseSlice";
+import { setExpenses, setTotalMonthlyExpense, setTotalLastMonthExpense } from "../../store/features/expenseSlice";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader2.json";
 import { OverViewChart, OverviewTransactionTable } from "../index";
-import { getTotalAmount, lastMonth, lastYear, calculatePercentageChange } from "../../utils/helper";
+import { getTotalAmount, lastMonth, lastYear, calculatePercentageChange, currencySymbols } from "../../utils/helper";
 
 const MetricCard = ({ title, value, change, icon, changeColor, show=true, arrowIcon="up" }) => (
   <Card>
@@ -60,9 +60,7 @@ export default function Overview() {
   const [isLoading, setIsLoading] = useState(false);
   const [budgetStatus, setBudgetStatus] = useState(0);
   const incomes = useSelector((state) => state.income.incomes);
-  const lastMonthIncomes = useSelector((state) => state.income.lastMonthIncomes);
   const expenses = useSelector((state) => state.expense.expenses);
-  const lastMonthExpenses = useSelector((state) => state.expense.lastMonthExpenses);
   const userData = useSelector((state) => state.auth.userData);
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();  
@@ -89,8 +87,10 @@ export default function Overview() {
           if (incomeResponse.success) {
             if (Object.keys(incomeResponse.data).length !== 0) {
               dispatch(setIncomes({ incomes: incomeResponse.data.incomes }));
+              dispatch(setTotalMonthlyIncome({ totalMonthlyIncome: getTotalAmount(incomeResponse.data.incomes) }));
             } else {
               dispatch(setIncomes({ incomes: [] }));
+              dispatch(setTotalMonthlyIncome({ totalMonthlyIncome: 0 }));
             }
           }
 
@@ -102,8 +102,10 @@ export default function Overview() {
           if (lastMonthIncomeResponse.success) {
             if (Object.keys(lastMonthIncomeResponse.data).length !== 0) {
               dispatch(setIncomes({ lastMonthIncomes: lastMonthIncomeResponse.data.incomes }));
+              dispatch(setTotalLastMonthIncome({ totalLastMonthIncome: getTotalAmount(lastMonthIncomeResponse.data.incomes) }));
             } else {
               dispatch(setIncomes({ lastMonthIncomes: [] }));
+              dispatch(setTotalLastMonthIncome({ totalLastMonthIncome: 0 }));
             }            
           }
     
@@ -115,8 +117,10 @@ export default function Overview() {
           if (expenseResponse.success) {
             if (Object.keys(expenseResponse.data).length !== 0) {
               dispatch(setExpenses({ expenses: expenseResponse.data.expenses }));
+              dispatch(setTotalMonthlyExpense({ totalMonthlyExpense: getTotalAmount(expenseResponse.data.expenses) }));
             } else {
               dispatch(setExpenses({ expenses: [] }));
+              dispatch(setTotalMonthlyExpense({ totalMonthlyExpense: 0 }));
             }
           }
 
@@ -128,8 +132,10 @@ export default function Overview() {
           if (lastMonthExpenseResponse.success) {
             if (Object.keys(lastMonthExpenseResponse.data).length !== 0) {
               dispatch(setExpenses({ lastMonthExpenses: lastMonthExpenseResponse.data.expenses }));
+              dispatch(setTotalLastMonthExpense({ totalLastMonthExpense: getTotalAmount(lastMonthExpenseResponse.data.expenses) }));
             } else {
               dispatch(setExpenses({ lastMonthExpenses: [] }));
+              dispatch(setTotalLastMonthExpense({ totalLastMonthExpense: 0 }));
             }
           }
         } catch (error) {
@@ -150,10 +156,10 @@ export default function Overview() {
     }
   }, [token, navigate, dispatch]);
 
-  const totalIncome = getTotalAmount(incomes);
-  const totalExpense = getTotalAmount(expenses);
-  const lastMonthIncome = getTotalAmount(lastMonthIncomes);
-  const lastMonthExpense = getTotalAmount(lastMonthExpenses);
+  const totalIncome = useSelector((state) => state.income.totalMonthlyIncome);
+  const totalExpense = useSelector((state) => state.expense.totalMonthlyExpense);
+  const lastMonthIncome = useSelector((state) => state.income.totalLastMonthIncome);
+  const lastMonthExpense = useSelector((state) => state.expense.totalLastMonthExpense);
   const incomeChange = calculatePercentageChange(totalIncome, lastMonthIncome);
   const expenseChange = calculatePercentageChange(totalExpense, lastMonthExpense);
   const totalMonthlyBalanceChange = calculatePercentageChange(totalIncome - totalExpense, lastMonthIncome - lastMonthExpense);
@@ -168,6 +174,8 @@ export default function Overview() {
     }
   }, [expenses]);
 
+  const currency = currencySymbols[userData?.currency];
+
   return (
     <div className={`bg-[#e5e7eb] p-8 w-full ${incomes.length !== 0 && expenses.length !== 0 ? "" : "h-full"}`}>
       {!isLoading && (
@@ -175,7 +183,7 @@ export default function Overview() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <MetricCard
               title="Total Balance"
-              value={`$ ${userData?.totalBalance}`}
+              value={`${currency} ${userData?.totalBalance}`}
               show={false}
               icon={<Landmark className="text-green-400" />}
               changeColor="green"
@@ -183,7 +191,7 @@ export default function Overview() {
             />
             <MetricCard
               title="Monthly Total Balance"
-              value={`$ ${totalIncome - totalExpense}`}
+              value={`${currency} ${totalIncome - totalExpense}`}
               change={`${totalMonthlyBalanceChange.toFixed(2)}%`}
               icon={<HandCoins className="text-green-400" />}
               changeColor={totalMonthlyBalanceChange >= 0 ? "green" : "red"}
@@ -191,7 +199,7 @@ export default function Overview() {
             />
             <MetricCard
               title="Monthly Expense"
-              value={`$ ${totalExpense}`}
+              value={`${currency} ${totalExpense}`}
               change={`${expenseChange.toFixed(2)}%`}
               icon={<SquarePercent className="text-red-400" />}
               changeColor={expenseChange >= 0 ? "red" : "green"}
@@ -199,7 +207,7 @@ export default function Overview() {
             />
             <MetricCard
               title="Monthly Income"
-              value={`$ ${totalIncome}`}
+              value={`${currency} ${totalIncome}`}
               change={`${incomeChange.toFixed(2)}%`}
               icon={<Wallet className="text-green-400" />}
               changeColor={incomeChange >= 0 ? "green" : "red"}

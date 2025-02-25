@@ -3,6 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     lastMonthExpenses: [],
     expenses: [],
+    totalMonthlyExpense: 0,
+    totalLastMonthExpense: 0,
     isLoading: false,
 };
 
@@ -31,9 +33,15 @@ const expenseSlice = createSlice({
                 state.expenses[index] = { ...state.expenses[index], ...updatedExpense };
             }
         },
+        setTotalMonthlyExpense: (state, action) => {
+            state.totalMonthlyExpense = action.payload.totalMonthlyExpense;
+        },
+        setTotalLastMonthExpense: (state, action) => {
+            state.totalLastMonthExpense = action.payload.totalLastMonthExpense
+        }
     },
 });
 
-export const { setExpenses, setLoading, addExpense, deleteExpense, updateExpense } = expenseSlice.actions;
+export const { setExpenses, setLoading, addExpense, deleteExpense, updateExpense, setTotalMonthlyExpense, setTotalLastMonthExpense } = expenseSlice.actions;
 
 export default expenseSlice.reducer;

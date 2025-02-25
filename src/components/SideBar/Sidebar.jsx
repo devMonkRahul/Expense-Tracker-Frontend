@@ -44,18 +44,21 @@ export function SidebarContent() {
         </ListItemPrefix>
         Expenses
       </ListItem>
-      <ListItem className="hover:text-brown-500 hover:py-6 font-bold">
+      <ListItem 
+        className="hover:text-brown-500 hover:py-6 font-bold"
+        onClick={() => navigate("/dashboard/budget")}
+      >
         <ListItemPrefix>
           <Calculator className="text-brown-300" />
         </ListItemPrefix>
         Budgets
       </ListItem>
-      <ListItem className="hover:text-brown-500 hover:py-6 font-bold">
+      {/* <ListItem className="hover:text-brown-500 hover:py-6 font-bold">
         <ListItemPrefix>
           <BookMarked className="text-brown-300" />
         </ListItemPrefix>
         Reports
-      </ListItem>
+      </ListItem> */}
     </List>
   );
 }

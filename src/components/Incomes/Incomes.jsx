@@ -9,22 +9,7 @@ import { Chart, CategoryBreakdown, TransactionTable } from "../index";
 import { useGet } from "../../hooks/useHttp";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader.json";
-
-const categoryColors = {
-  Salary: "blue",
-  Freelance: "green",
-  "Business Income": "purple",
-  "Investment Income": "yellow",
-  "Rental Income": "red",
-};
-
-const pieChartColors = {
-  Salary: "#4287f5",
-  Freelance: "#42f5a7",
-  "Business Income": "#a742f5",
-  "Investment Income": "#f5d742",
-  "Rental Income": "#f54242",
-};
+import { pieChartColors, incomeCategoryColors as categoryColors } from "../../utils/helper";
 
 export default function Incomes() {
   const dispatch = useDispatch();
