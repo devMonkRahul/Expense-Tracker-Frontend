@@ -27,6 +27,8 @@ import {
   validateEmail,
 } from "../utils/helper";
 import { setError } from "../store/features/errorSlice";
+import { UpdatePasswordModal } from "../components";
+import { currencySymbols } from "../utils/helper";
 
 export default function SettingsPage() {
   const dispatch = useDispatch();
@@ -217,9 +219,7 @@ export default function SettingsPage() {
         }
       } else {
         dispatch(
-          setError(
-            "Please validate the details before saving your changes"
-          )
+          setError("Please validate the details before saving your changes")
         );
       }
     } else {
@@ -279,59 +279,46 @@ export default function SettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-              <div className="flex items-center justify-between gap-4">
-                <Input
-                  label="User Name"
-                  defaultValue={username}
-                  color={darkMode ? "white" : "gray"}
-                  className="!text-gray-900 dark:!text-white"
-                  labelProps={{
-                    className: "!text-gray-900 dark:!text-white",
-                  }}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <IconButton
-                  variant="text"
-                  color={usernameAvailable ? "green" : "red"}
-                  className="rounded-full mr-4"
-                >
-                  {usernameAvailable ? (
-                    <CircleCheckBig size={30} />
+              <Input
+                label="User Name"
+                defaultValue={username}
+                color={darkMode ? "white" : "gray"}
+                className="!text-gray-900 dark:!text-white"
+                labelProps={{
+                  className: "!text-gray-900 dark:!text-white",
+                }}
+                onChange={(e) => setUsername(e.target.value)}
+                icon={
+                  usernameAvailable ? (
+                    <CircleCheckBig size={20} color="green" />
                   ) : (
-                    <CircleAlert size={30} />
-                  )}
-                </IconButton>
-              </div>
+                    <CircleAlert size={20} color="red" />
+                  )
+                }
+              />
               {!usernameAvailable && (
                 <Typography variant="small" color="red" className="-my-4 ml-2">
                   {usernameError}
                 </Typography>
               )}
-              <div className="flex items-center justify-between gap-4">
-                <Input
-                  label="Email Address"
-                  defaultValue={email}
-                  color={darkMode ? "white" : "gray"}
-                  className="!text-gray-900 dark:!text-white"
-                  labelProps={{
-                    className: "!text-gray-900 dark:!text-white",
-                  }}
-                  onChange={(e) => handleEmailChange(e)}
-                />
-                <IconButton
-                  variant="text"
-                  color={
-                    emailAvailableByRegex && emailAvailable ? "green" : "red"
-                  }
-                  className="rounded-full mr-4"
-                >
-                  {emailAvailableByRegex && emailAvailable ? (
-                    <CircleCheckBig size={30} />
+
+              <Input
+                label="Email Address"
+                defaultValue={email}
+                color={darkMode ? "white" : "gray"}
+                className="!text-gray-900 dark:!text-white"
+                labelProps={{
+                  className: "!text-gray-900 dark:!text-white",
+                }}
+                onChange={(e) => handleEmailChange(e)}
+                icon={
+                  emailAvailableByRegex && emailAvailable ? (
+                    <CircleCheckBig size={20} color="green" />
                   ) : (
-                    <CircleAlert size={30} />
-                  )}
-                </IconButton>
-              </div>
+                    <CircleAlert size={20} color="red" />
+                  )
+                }
+              />
               {(!emailAvailableByRegex || !emailAvailable) && (
                 <Typography variant="small" color="red" className="-my-4 ml-2">
                   {emailError}
@@ -395,14 +382,15 @@ export default function SettingsPage() {
               Security
             </Typography>
             <div className="flex items-center gap-4">
-              <Button
+              {/* <Button
                 variant="outlined"
                 size="sm"
                 color={darkMode ? "white" : "blue-gray"}
                 className="rounded-full"
               >
                 Change Password
-              </Button>
+              </Button> */}
+              <UpdatePasswordModal />
             </div>
             {/* TODO: Add Two-Factor Authentication */}
             {/* <div className="flex items-center justify-between">
