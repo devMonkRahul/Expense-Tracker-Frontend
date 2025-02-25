@@ -25,10 +25,13 @@ import {
   Plane,
   ShoppingBag,
 } from "lucide-react";
+import { currencySymbols } from "../../utils/helper";
 
 export default function OverviewTransactionTable() {
+  const userData = useSelector((state) => state.auth.userData);
   const incomes = useSelector((state) => state.income.incomes);
   const expenses = useSelector((state) => state.expense.expenses);
+  const currency = currencySymbols[userData?.currency];
 
   const totalTransactions = [...incomes, ...expenses]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -156,7 +159,7 @@ export default function OverviewTransactionTable() {
                           color={type === "income" ? incomeColor : expenseColor}
                           className="font-normal"
                         >
-                          {type === "income" ? `+$${amount}` : `-$${amount}`}
+                          {type === "income" ? `+${currency} ${amount}` : `-${currency} ${amount}`}
                         </Typography>
                       </td>
                     </tr>

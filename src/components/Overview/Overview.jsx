@@ -19,7 +19,7 @@ import { setExpenses, setTotalMonthlyExpense, setTotalLastMonthExpense } from ".
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader2.json";
 import { OverViewChart, OverviewTransactionTable } from "../index";
-import { getTotalAmount, lastMonth, lastYear, calculatePercentageChange } from "../../utils/helper";
+import { getTotalAmount, lastMonth, lastYear, calculatePercentageChange, currencySymbols } from "../../utils/helper";
 
 const MetricCard = ({ title, value, change, icon, changeColor, show=true, arrowIcon="up" }) => (
   <Card>
@@ -174,6 +174,8 @@ export default function Overview() {
     }
   }, [expenses]);
 
+  const currency = currencySymbols[userData?.currency];
+
   return (
     <div className={`bg-[#e5e7eb] p-8 w-full ${incomes.length !== 0 && expenses.length !== 0 ? "" : "h-full"}`}>
       {!isLoading && (
@@ -181,7 +183,7 @@ export default function Overview() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <MetricCard
               title="Total Balance"
-              value={`$ ${userData?.totalBalance}`}
+              value={`${currency} ${userData?.totalBalance}`}
               show={false}
               icon={<Landmark className="text-green-400" />}
               changeColor="green"
@@ -189,7 +191,7 @@ export default function Overview() {
             />
             <MetricCard
               title="Monthly Total Balance"
-              value={`$ ${totalIncome - totalExpense}`}
+              value={`${currency} ${totalIncome - totalExpense}`}
               change={`${totalMonthlyBalanceChange.toFixed(2)}%`}
               icon={<HandCoins className="text-green-400" />}
               changeColor={totalMonthlyBalanceChange >= 0 ? "green" : "red"}
@@ -197,7 +199,7 @@ export default function Overview() {
             />
             <MetricCard
               title="Monthly Expense"
-              value={`$ ${totalExpense}`}
+              value={`${currency} ${totalExpense}`}
               change={`${expenseChange.toFixed(2)}%`}
               icon={<SquarePercent className="text-red-400" />}
               changeColor={expenseChange >= 0 ? "red" : "green"}
@@ -205,7 +207,7 @@ export default function Overview() {
             />
             <MetricCard
               title="Monthly Income"
-              value={`$ ${totalIncome}`}
+              value={`${currency} ${totalIncome}`}
               change={`${incomeChange.toFixed(2)}%`}
               icon={<Wallet className="text-green-400" />}
               changeColor={incomeChange >= 0 ? "green" : "red"}

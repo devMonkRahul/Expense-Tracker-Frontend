@@ -47,6 +47,7 @@ import {
   expenseCategoryColors,
   categoryWiseTotal,
   expenseOptions,
+  currencySymbols,
 } from "../../utils/helper";
 import Lottie from "lottie-react";
 import animationData from "../../assets/Lottie/loader.json";
@@ -54,6 +55,8 @@ import { BudgetModal } from "../index";
 
 export default function Budget() {
   const [isLoading, setIsLoading] = useState(false);
+  const userData = useSelector((state) => state.auth.userData);
+  const currency = currencySymbols[userData?.currency];
   const totalBudget = useSelector((state) => state.budget.totalBudget);
   const budgets = useSelector((state) => state.budget.budgets);
   const totalSpent = useSelector((state) => state.expense.totalMonthlyExpense);
@@ -223,7 +226,7 @@ export default function Budget() {
                           Total Budget
                         </Typography>
                         <Typography variant="h4" color="blue-gray">
-                          ${totalBudget?.toLocaleString()}
+                          {currency}{totalBudget?.toLocaleString()}
                         </Typography>
                       </div>
                       <div>
@@ -235,7 +238,7 @@ export default function Budget() {
                           Spent
                         </Typography>
                         <Typography variant="h4" color="red">
-                          ${totalSpent?.toLocaleString()}
+                          {currency}{totalSpent?.toLocaleString()}
                         </Typography>
                       </div>
                       <div>
@@ -247,7 +250,7 @@ export default function Budget() {
                           Remaining
                         </Typography>
                         <Typography variant="h4" color="green">
-                          ${totalRemaining?.toLocaleString()}
+                          {currency}{totalRemaining?.toLocaleString()}
                         </Typography>
                       </div>
                     </div>
@@ -308,14 +311,14 @@ export default function Budget() {
                       <CardBody className="pt-0 px-6 pb-6">
                         <div className="space-y-4">
                           <Typography variant="h5" color="blue-gray">
-                            ${category.spent}{" "}
+                            {currency}{category.spent}{" "}
                             <Typography
                               as="span"
                               variant="small"
                               color="blue-gray"
                               className="opacity-70"
                             >
-                              of ${category.total}
+                              of {currency}{category.total}
                             </Typography>
                           </Typography>
                           <Progress

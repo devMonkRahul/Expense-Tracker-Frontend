@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import animationData from "../../assets/Lottie/loader.json";
 import Lottie from "lottie-react";
-import { Car } from "lucide-react";
+
 
 function getCurrentWeekNumber() {
   const now = new Date();
@@ -65,45 +65,6 @@ const transformToWeeklyData = (transactions) => {
 
   return chartData;
 };
-
-// const transformToYearlyData = (transactions) => {
-//   const currentYear = new Date().getFullYear();
-//   const lastYear = currentYear - 1;
-
-//   // Initialize with 0 amounts for both years
-//   const yearlyData = [
-//     { year: lastYear, amount: 0 },
-//     { year: currentYear, amount: 0 },
-//   ];
-
-//   // Populate with actual amounts
-//   transactions.forEach(({ amount, date }) => {
-//     const year = new Date(date).getFullYear();
-
-//     if (year === lastYear) {
-//       yearlyData[0].amount += amount;
-//     } else if (year === currentYear) {
-//       yearlyData[1].amount += amount;
-//     }
-//   });
-
-//   return yearlyData;
-// };
-
-// const chartData = [
-//   { month: "Jan", amount: 2500 },
-//   { month: "Feb", amount: 3200 },
-//   { month: "Mar", amount: 2800 },
-//   { month: "Apr", amount: 3500 },
-//   { month: "May", amount: 2900 },
-//   { month: "Jun", amount: 3100 },
-//   { month: "Jul", amount: 3600 },
-//   { month: "Aug", amount: 3300 },
-//   { month: "Sep", amount: 3700 },
-//   { month: "Oct", amount: 3400 },
-//   { month: "Nov", amount: 3200 },
-//   { month: "Dec", amount: 3500 },
-// ];
 
 const transformToYearlyData = (transactions) => {
   if (transactions.length === 0) return [];

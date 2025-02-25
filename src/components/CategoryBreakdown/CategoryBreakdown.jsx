@@ -1,8 +1,12 @@
 import React from "react";
 import { Card, CardBody, Typography, Progress } from "@material-tailwind/react";
+import { useSelector } from "react-redux";
+import { currencySymbols } from "../../utils/helper";
 
 export default function CategoryBreakdown({ categories, categoryColors, type="income" }) {
   const total = categories.reduce((acc, category) => acc + category.amount, 0);
+  const userData = useSelector((state) => state.auth.userData);
+  const currency = currencySymbols[userData?.currency];
   return (
     <Card className="h-full">
       <CardBody>
@@ -14,7 +18,7 @@ export default function CategoryBreakdown({ categories, categoryColors, type="in
             <div key={category.category}>
               <div className="flex justify-between mb-2">
                 <Typography color="blue-gray">{category.category}</Typography>
-                <Typography color="blue-gray">${category.amount}</Typography>
+                <Typography color="blue-gray">{currency}{category.amount}</Typography>
               </div>
               <Progress
                 value={(category.amount / total) * 100}
@@ -32,7 +36,7 @@ export default function CategoryBreakdown({ categories, categoryColors, type="in
           color="blue-gray"
           className={`justify-between ${type === "income" ? "text-green-500" : "text-red-500"}`}
         >
-          Total: $
+          Total: {currency}
           {categories.reduce((acc, category) => acc + category.amount, 0)}
         </Typography>
       </div>

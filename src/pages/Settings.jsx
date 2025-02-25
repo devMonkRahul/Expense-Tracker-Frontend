@@ -28,7 +28,6 @@ import {
 } from "../utils/helper";
 import { setError } from "../store/features/errorSlice";
 import { UpdatePasswordModal } from "../components";
-import { currencySymbols } from "../utils/helper";
 
 export default function SettingsPage() {
   const dispatch = useDispatch();
