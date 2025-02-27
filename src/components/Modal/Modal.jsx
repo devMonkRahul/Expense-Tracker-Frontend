@@ -12,8 +12,9 @@ export default function Modal({ type, buttonClass="", isFullWidthButton=false })
     <>
       <Button
         variant={type === "login" ? "text" : "gradient"}
+        color="white"
         size="sm"
-        className={`hidden lg:inline-block px-4 text-[15px] ${buttonClass} ${isFullWidthButton ? "w-full" : ""}`}
+        className={`hidden lg:inline-block px-4 text-[15px] ${buttonClass} ${isFullWidthButton ? "w-full" : ""} ${type === "login" ? "border border-white" : ""}`}
         onClick={handleOpen}
       >
         <span>{type === "login" ? "Log in" : "Sign up"}</span>

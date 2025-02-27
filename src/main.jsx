@@ -7,6 +7,7 @@ import store from "./store/store"
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ErrorPopup from './utils/Popup/ErrorPopup/ErrorPopup.jsx'
 import DashBoard from './pages/DashBoard.jsx'
+import LandingPage from './pages/LandingPage.jsx'
 import SettingsPage from './pages/Settings.jsx'
 import { Expenses, Overview, Incomes, Budget } from './components'
 
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
+      {
+        path: '/',
+        element: <LandingPage />
+      },
       {
         path: '/dashboard',
         element: <DashBoard />,

@@ -131,6 +131,8 @@ export function StickyNavbar() {
 
   const { status } = useSelector((state) => state.auth);
 
+  const path = window.location.href.split("/")[3];
+
   React.useEffect(() => {
     window.addEventListener(
       "resize",
@@ -142,7 +144,7 @@ export function StickyNavbar() {
   return (
     <>
       <div className="w-full sticky top-0 z-10 border-none">
-        <Navbar className="z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-3 shadow-lg bg-white dark:bg-blue-gray-900 dark:border-none">
+        <Navbar className={`z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-3 shadow-lg ${path === '' ? 'bg-black border-none' : 'bg-white'}`}>
           <div className="flex items-center justify-between text-blue-gray-900">
             {token && openSidebar && (
               <IconButton
@@ -154,7 +156,7 @@ export function StickyNavbar() {
               </IconButton>
             )}
             <Typography
-              className="mr-4 cursor-pointer font-bold text-lg text-black dark:text-white"
+              className={`mr-4 cursor-pointer font-bold text-lg ${path === '' ? 'text-white' : 'text-black'}`}
             >
               Expense Tracker
             </Typography>
