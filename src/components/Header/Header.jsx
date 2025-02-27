@@ -164,8 +164,8 @@ export function StickyNavbar() {
               <div className="flex items-center gap-x-5">
                 {!status ? (
                   <>
-                    <Modal type="login" />
-                    <Modal type="signup" />
+                    <Modal type="login" text="login" />
+                    <Modal type="signup" text="signup" />
                   </>
                 ) : (
                   <>

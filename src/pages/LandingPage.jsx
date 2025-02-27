@@ -23,7 +23,7 @@ import {
   ChevronDown,
   MoveRight,
 } from "lucide-react";
-
+import { Modal } from "../components";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa6";
 
 export default function LandingPage() {
@@ -58,7 +58,7 @@ export default function LandingPage() {
               size="lg"
               className="bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white px-8 py-3 rounded-lg flex items-center justify-center gap-2 text-base"
             >
-              Get Started Free
+              <Modal type="signup" text="Get Started Free" isBtn={false}/>
               <MoveRight strokeWidth={3}/>
             </Button>
             <Button
@@ -268,7 +268,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-center mt-16">
             <div className="bg-[#2563eb] px-8 py-4 rounded-lg flex items-center justify-center gap-3">
               <Typography variant="h2" className="text-base font-bold">
-                Start Tracking Now
+                <Modal type="signup" text="Start Tracking Now" isBtn={false}/>
               </Typography>
               <MoveRight size={28} strokeWidth={1.75} />
             </div>
@@ -447,7 +447,7 @@ export default function LandingPage() {
                 size="lg"
                 className="flex items-center gap-2 hover:bg-[#f5f5f5] hover:text-[#204ac1]"
               >
-                Get Started Free
+                <Modal type="signup" text="Get Started Free" isBtn={false}/>
                 <MoveRight size={20} strokeWidth={3} />
               </Button>
               <Button
